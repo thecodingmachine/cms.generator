@@ -11,14 +11,14 @@
 
     "extra": {
       "mouf": {
-        "install": [
+        /*"install": [
           {
             "type": "file",
             "file": "src/install.php",
             "scope": "global",
             "description": "Installing CMS Generator"
           }
-        ],
+        ],*/
         "require-admin": [
           "src/CmsGeneratorAdmin.php"
         ]
