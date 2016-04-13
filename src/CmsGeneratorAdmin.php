@@ -8,6 +8,6 @@ MoufUtils::registerChooseInstanceMenuItem('cmsGeneratorSubMenu', 'Generator', 't
 
 // Controller declaration
 $moufManager = MoufManager::getMoufManager();
-$moufManager->declareComponent('tdbmadmin', 'Mouf\\CMS\\Generator\\Controllers\\CmsGeneratorController', true);
-$moufManager->bindComponents('tdbmadmin', 'template', 'moufTemplate');
-$moufManager->bindComponents('tdbmadmin', 'content', 'block.content');
+$moufManager->declareComponent('cmsadmin', 'Mouf\\CMS\\Generator\\Controllers\\CmsGeneratorController', true);
+$moufManager->bindComponents('cmsadmin', 'template', 'moufTemplate');
+$moufManager->bindComponents('cmsadmin', 'content', 'block.content');
