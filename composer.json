@@ -1,0 +1,30 @@
+{
+	"autoload": {
+        "psr-0": {"CMSGenerator": "src/"}
+    },
+	
+    "require": {
+        "mouf/mvc.splash": "~7.0",
+        "mouf/database.tdbm": "4.0.*",
+		"mouf/utils.common.doctrine-cache-wrapper": "~1.0"
+    },
+
+    "extra": {
+      "mouf": {
+        "install": [
+          {
+            "type": "file",
+            "file": "src/install.php",
+            "scope": "global",
+            "description": "Installing CMS Generator"
+          }
+        ],
+        "require-admin": [
+          "src/CmsGeneratorAdmin.php"
+        ]
+      }
+    },
+	
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

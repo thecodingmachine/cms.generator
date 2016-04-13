@@ -1,0 +1,13 @@
+bin
+config.php
+composer.lock
+
+# directories
+vendor/*
+.composer/*
+mouf/no_commit/*
+.idea/*
+
+# configuration
+mouf/Mouf.php
+mouf/MoufUI.php
