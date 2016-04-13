@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f25b09e0e4cfad47a9d7eae0b585a67e",
-    "content-hash": "fd2f07b061a051b48abe36f3ea1b07d6",
+    "hash": "83ce0a4b26f808e08ba013453f71df18",
+    "content-hash": "051140daced3ca202c18254ffc272527",
     "packages": [
         {
             "name": "beberlei/porpaginas",
@@ -956,16 +956,16 @@
         },
         {
             "name": "mouf/database.tdbm",
-            "version": "v4.0.0-beta14",
+            "version": "4.0.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thecodingmachine/database.tdbm.git",
-                "reference": "75904a633fa9ac9893e2da6371e4edddefd81fc7"
+                "reference": "fd4ff6b8676e8d11ae4d88697979eb90438af2cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thecodingmachine/database.tdbm/zipball/75904a633fa9ac9893e2da6371e4edddefd81fc7",
-                "reference": "75904a633fa9ac9893e2da6371e4edddefd81fc7",
+                "url": "https://api.github.com/repos/thecodingmachine/database.tdbm/zipball/fd4ff6b8676e8d11ae4d88697979eb90438af2cc",
+                "reference": "fd4ff6b8676e8d11ae4d88697979eb90438af2cc",
                 "shasum": ""
             },
             "require": {
@@ -979,6 +979,7 @@
                 "mouf/mouf": "~2.0.10",
                 "mouf/schema-analyzer": "^1.1",
                 "mouf/utils.common.conditioninterface": "~2.0",
+                "mouf/utils.common.doctrine-cache-wrapper": "~1.0",
                 "php": ">=5.5.0",
                 "psr/log": "~1.0"
             },
@@ -1081,7 +1082,7 @@
                 "orm",
                 "persistance"
             ],
-            "time": "2016-04-05 10:17:03"
+            "time": "2016-04-13 11:57:31"
         },
         {
             "name": "mouf/html.htmlelement",
@@ -2564,6 +2565,65 @@
                 "interface"
             ],
             "time": "2015-01-28 15:50:43"
+        },
+        {
+            "name": "mouf/utils.common.doctrine-cache-wrapper",
+            "version": "1.0.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thecodingmachine/utils.common.doctrine-cache-wrapper.git",
+                "reference": "495e1067c5c4e70519cbb58039f501a05e143b21"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thecodingmachine/utils.common.doctrine-cache-wrapper/zipball/495e1067c5c4e70519cbb58039f501a05e143b21",
+                "reference": "495e1067c5c4e70519cbb58039f501a05e143b21",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/cache": "~1.6",
+                "mouf/utils.cache.cache-interface": "~2.0",
+                "mouf/utils.constants.debug": "~1.0",
+                "mouf/utils.constants.secret": "~1.0",
+                "php": ">=5.3.0"
+            },
+            "type": "mouf-library",
+            "extra": {
+                "mouf": {
+                    "install": [
+                        {
+                            "type": "class",
+                            "class": "Mouf\\Utils\\Common\\Doctrine\\Cache\\CacheInstaller"
+                        }
+                    ],
+                    "logo": "logo.png"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Mouf\\Utils\\Common\\Doctrine\\Cache\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "David Negrier",
+                    "email": "d.negrier@thecodingmachine.com",
+                    "homepage": "http://mouf-php.com"
+                }
+            ],
+            "description": "Provide an install script for a Doctrine's Cache in Mouf Framework.",
+            "homepage": "https://mouf-php.com/packages/mouf/utils.common.doctrine-cache-wrapper",
+            "keywords": [
+                "annotations",
+                "doctrine",
+                "mouf",
+                "wrapper"
+            ],
+            "time": "2016-04-13 10:38:36"
         },
         {
             "name": "mouf/utils.common.paginable-interface",
