@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9a6278f3a17ceb55edbe3190d9227044",
-    "content-hash": "53ff9ee73fed5b3fc4795b2e4ee3328e",
+    "hash": "f25b09e0e4cfad47a9d7eae0b585a67e",
+    "content-hash": "fd2f07b061a051b48abe36f3ea1b07d6",
     "packages": [
         {
             "name": "beberlei/porpaginas",
@@ -2564,65 +2564,6 @@
                 "interface"
             ],
             "time": "2015-01-28 15:50:43"
-        },
-        {
-            "name": "mouf/utils.common.doctrine-cache-wrapper",
-            "version": "1.0.x-dev",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/thecodingmachine/utils.common.doctrine-cache-wrapper.git",
-                "reference": "ec583214bf0faeb79807f94078552cad7e0207db"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/thecodingmachine/utils.common.doctrine-cache-wrapper/zipball/ec583214bf0faeb79807f94078552cad7e0207db",
-                "reference": "ec583214bf0faeb79807f94078552cad7e0207db",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/cache": "~1.6",
-                "mouf/utils.cache.cache-interface": "~2.0",
-                "mouf/utils.constants.debug": "~1.0",
-                "mouf/utils.constants.secret": "~1.0",
-                "php": ">=5.3.0"
-            },
-            "type": "mouf-library",
-            "extra": {
-                "mouf": {
-                    "install": [
-                        {
-                            "type": "class",
-                            "class": "Mouf\\Utils\\Common\\Doctrine\\Cache\\CacheInstaller"
-                        }
-                    ],
-                    "logo": "logo.png"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Mouf\\Utils\\Common\\Doctrine\\Cache\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "David Negrier",
-                    "email": "d.negrier@thecodingmachine.com",
-                    "homepage": "http://mouf-php.com"
-                }
-            ],
-            "description": "Provide an install script for a Doctrine's Cache in Mouf Framework.",
-            "homepage": "https://mouf-php.com/packages/mouf/utils.common.doctrine-cache-wrapper",
-            "keywords": [
-                "annotations",
-                "doctrine",
-                "mouf",
-                "wrapper"
-            ],
-            "time": "2016-04-13 10:20:37"
         },
         {
             "name": "mouf/utils.common.paginable-interface",
