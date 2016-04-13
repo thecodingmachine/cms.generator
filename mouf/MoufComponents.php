@@ -493,25 +493,6 @@ $moufManager->addComponentInstances(array (
       ),
     ),
   ),
-  'daoFactory' => 
-  array (
-    'class' => 'CMSGenerator\\Model\\Dao\\Generated\\DaoFactory',
-    'external' => false,
-    'fieldProperties' => 
-    array (
-    ),
-    'setterProperties' => 
-    array (
-    ),
-    'fieldBinds' => 
-    array (
-    ),
-    'setterBinds' => 
-    array (
-    ),
-    'weak' => false,
-    'comment' => '',
-  ),
   'dbalConnection' => 
   array (
     'class' => 'Doctrine\\DBAL\\Connection',
@@ -1114,42 +1095,6 @@ return $driver;
       'chainWith' => 'apcCacheService',
     ),
   ),
-  'rootController' => 
-  array (
-    'class' => 'CMSGenerator\\Controllers\\RootController',
-    'external' => false,
-    'weak' => false,
-    'constructor' => 
-    array (
-      0 => 
-      array (
-        'value' => 'bootstrapTemplate',
-        'parametertype' => 'object',
-        'type' => 'string',
-        'metadata' => 
-        array (
-        ),
-      ),
-      1 => 
-      array (
-        'value' => 'block.content',
-        'parametertype' => 'object',
-        'type' => 'string',
-        'metadata' => 
-        array (
-        ),
-      ),
-      2 => 
-      array (
-        'value' => 'twigEnvironment',
-        'parametertype' => 'object',
-        'type' => 'string',
-        'metadata' => 
-        array (
-        ),
-      ),
-    ),
-  ),
   'rootUrlInlineWebLibrary' => 
   array (
     'class' => 'Mouf\\Html\\Utils\\WebLibraryManager\\InlineWebLibrary',
@@ -1624,13 +1569,6 @@ return rtrim(sys_get_temp_dir(), '/\\').'/mouftwigtemplatemain_'.$posixGetuid.st
 	 }
 
 	/**
-	 * @return CMSGenerator\Model\Dao\Generated\DaoFactory
-	 */
-	 public static function getDaoFactory() {
-	 	return MoufManager::getMoufManager()->get('daoFactory');
-	 }
-
-	/**
 	 * @return Doctrine\DBAL\Connection
 	 */
 	 public static function getDbalConnection() {
@@ -1810,13 +1748,6 @@ return rtrim(sys_get_temp_dir(), '/\\').'/mouftwigtemplatemain_'.$posixGetuid.st
 	 */
 	 public static function getRendererCacheService() {
 	 	return MoufManager::getMoufManager()->get('rendererCacheService');
-	 }
-
-	/**
-	 * @return CMSGenerator\Controllers\RootController
-	 */
-	 public static function getRootController() {
-	 	return MoufManager::getMoufManager()->get('rootController');
 	 }
 
 	/**
