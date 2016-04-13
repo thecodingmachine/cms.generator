@@ -1,6 +1,5 @@
 bin
 config.php
-composer.lock
 
 # directories
 vendor/*
