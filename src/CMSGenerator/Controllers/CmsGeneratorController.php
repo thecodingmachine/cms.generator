@@ -63,13 +63,13 @@ class CmsGeneratorController extends Controller {
     }
 
     /**
-     * @URL cmsGenerator
+     * @URL /cmsAdmin/
      */
     public function index() {
         // TODO: write content of action here
 
         // Let's add the twig file to the template.
-        $this->content->addHtmlElement(new TwigTemplate($this->twig, 'views/cms/index.twig', array("message"=>"world")));
+        $this->content->addHtmlElement(new TwigTemplate($this->twig, 'views/cms/generator.twig', array("message"=>"world")));
 
         return new HtmlResponse($this->template);
     }
