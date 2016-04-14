@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "83ce0a4b26f808e08ba013453f71df18",
-    "content-hash": "051140daced3ca202c18254ffc272527",
+    "hash": "a28e6ca665836dadb5fb13e6ae73c570",
+    "content-hash": "26aa8382b46f137ecf194af3bf646f15",
     "packages": [
         {
             "name": "beberlei/porpaginas",
@@ -955,17 +955,77 @@
             "time": "2015-09-17 15:41:00"
         },
         {
-            "name": "mouf/database.tdbm",
-            "version": "4.0.x-dev",
+            "name": "mouf/database.patcher",
+            "version": "v2.0.6",
             "source": {
                 "type": "git",
-                "url": "https://github.com/thecodingmachine/database.tdbm.git",
-                "reference": "fd4ff6b8676e8d11ae4d88697979eb90438af2cc"
+                "url": "https://github.com/thecodingmachine/database.patcher.git",
+                "reference": "be448970ae5038939790a9e196524e97603efb1d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thecodingmachine/database.tdbm/zipball/fd4ff6b8676e8d11ae4d88697979eb90438af2cc",
-                "reference": "fd4ff6b8676e8d11ae4d88697979eb90438af2cc",
+                "url": "https://api.github.com/repos/thecodingmachine/database.patcher/zipball/be448970ae5038939790a9e196524e97603efb1d",
+                "reference": "be448970ae5038939790a9e196524e97603efb1d",
+                "shasum": ""
+            },
+            "require": {
+                "mouf/database.doctrine-dbal-wrapper": "~1.0",
+                "mouf/utils.patcher": "~1.0",
+                "php": ">=5.3.0"
+            },
+            "type": "mouf-library",
+            "extra": {
+                "mouf": {
+                    "install": [
+                        {
+                            "type": "class",
+                            "class": "Mouf\\Database\\Patcher\\DatabasePatchInstaller",
+                            "description": "Create the 'patches' table in your database to track patches applied."
+                        }
+                    ],
+                    "require-admin": [
+                        "src/DBPatchAdmin.php"
+                    ],
+                    "logo": "icon.png"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Mouf\\Database\\Patcher": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "David Négrier",
+                    "email": "d.negrier@thecodingmachine.com",
+                    "homepage": "http://mouf-php.com"
+                }
+            ],
+            "description": "A database patch system designed for Mouf than enables developers to know what patch has been run and what needs to be run on its environment. This package adds database support to the Mouf patch system (mouf/utils.patcher).",
+            "homepage": "http://mouf-php.com/packages/mouf/database.patcher",
+            "keywords": [
+                "database",
+                "mouf",
+                "patch"
+            ],
+            "time": "2016-03-08 09:46:34"
+        },
+        {
+            "name": "mouf/database.tdbm",
+            "version": "v4.0.0-beta15",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thecodingmachine/database.tdbm.git",
+                "reference": "94b731bd76e84d413c34755c7e0d5de2ef76af6e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thecodingmachine/database.tdbm/zipball/94b731bd76e84d413c34755c7e0d5de2ef76af6e",
+                "reference": "94b731bd76e84d413c34755c7e0d5de2ef76af6e",
                 "shasum": ""
             },
             "require": {
@@ -1082,7 +1142,7 @@
                 "orm",
                 "persistance"
             ],
-            "time": "2016-04-13 11:57:31"
+            "time": "2016-04-14 07:45:30"
         },
         {
             "name": "mouf/html.htmlelement",
@@ -3133,6 +3193,80 @@
                 "logger"
             ],
             "time": "2013-10-29 18:36:52"
+        },
+        {
+            "name": "mouf/utils.patcher",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thecodingmachine/utils.patcher.git",
+                "reference": "9b6e7f017063e0313278fb5b9c5f7371fc91575b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thecodingmachine/utils.patcher/zipball/9b6e7f017063e0313278fb5b9c5f7371fc91575b",
+                "reference": "9b6e7f017063e0313278fb5b9c5f7371fc91575b",
+                "shasum": ""
+            },
+            "require": {
+                "mouf/mouf-validators-interface": "~2.0",
+                "mouf/utils.console": "~1.0",
+                "php": ">=5.5.0"
+            },
+            "type": "mouf-library",
+            "extra": {
+                "mouf": {
+                    "install": [
+                        {
+                            "type": "class",
+                            "class": "Mouf\\Utils\\Patcher\\PatchInstaller",
+                            "description": "Create the patchService instance."
+                        }
+                    ],
+                    "doc": [
+                        {
+                            "title": "For packages developers",
+                            "url": "doc/for_packages_developer.md"
+                        },
+                        {
+                            "title": "Advanced topics",
+                            "url": "doc/advanced.md"
+                        },
+                        {
+                            "title": "Troubleshooting",
+                            "url": "doc/troubleshooting.md"
+                        }
+                    ],
+                    "require-admin": [
+                        "src/PatchAdmin.php"
+                    ],
+                    "logo": "icon.png"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Mouf\\Utils\\Patcher": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "David Négrier",
+                    "email": "d.negrier@thecodingmachine.com",
+                    "homepage": "http://mouf-php.com"
+                }
+            ],
+            "description": "A patch system designed for Mouf than enables developers to know what patch has been run and what needs to be run on its environment. Very useful for database patches.",
+            "homepage": "https://mouf-php.com/mouf/utils.patcher",
+            "keywords": [
+                "database",
+                "mouf",
+                "patch"
+            ],
+            "time": "2015-05-20 11:34:53"
         },
         {
             "name": "mouf/utils.session.session-manager",
