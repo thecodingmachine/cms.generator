@@ -17,13 +17,13 @@ class CmsGeneratorController extends Controller {
      * The template used by this controller.
      * @var TemplateInterface
      */
-    private $template;
+    public $template;
 
     /**
      * The main content block of the page.
      * @var HtmlBlock
      */
-    private $content;
+    public $content;
 
     protected $selfedit;
 
