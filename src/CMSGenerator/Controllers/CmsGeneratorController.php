@@ -63,7 +63,7 @@ class CmsGeneratorController extends Controller {
     }
 
     /**
-     * @URL /cmsadmin/
+     * @URL /generate-cms-component
      */
     public function index() {
         // TODO: write content of action here
