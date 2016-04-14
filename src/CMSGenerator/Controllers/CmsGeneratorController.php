@@ -16,12 +16,6 @@ use Mouf\Mvc\Splash\HtmlResponse;
 class CmsGeneratorController extends Controller {
 
     /**
-     * The logger used by this controller.
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * The template used by this controller.
      * @var TemplateInterface
      */
@@ -34,43 +28,9 @@ class CmsGeneratorController extends Controller {
     private $content;
 
     /**
-     * The DAO factory object.
-     * @var DaoFactory
-     */
-    private $daoFactory;
-
-    /**
-     * The Twig environment (used to render Twig templates).
-     * @var Twig_Environment
-     */
-    private $twig;
-
-
-    /**
-     * Controller's constructor.
-     * @param LoggerInterface $logger The logger
-     * @param TemplateInterface $template The template used by this controller
-     * @param HtmlBlock $content The main content block of the page
-     * @param DaoFactory $daoFactory The object in charge of retrieving DAOs
-     * @param Twig_Environment $twig The Twig environment (used to render Twig templates)
-     */
-    public function __construct(LoggerInterface $logger, TemplateInterface $template, HtmlBlock $content, DaoFactory $daoFactory, Twig_Environment $twig) {
-        $this->logger = $logger;
-        $this->template = $template;
-        $this->content = $content;
-        $this->daoFactory = $daoFactory;
-        $this->twig = $twig;
-    }
-
-    /**
-     * @URL /generate-cms-component
+     * @Action
      */
     public function index() {
-        // TODO: write content of action here
-
-        // Let's add the twig file to the template.
-        $this->content->addHtmlElement(new TwigTemplate($this->twig, 'views/cms/generator.twig', array("message"=>"world")));
-
-        return new HtmlResponse($this->template);
+        $this->content->addFile(__DIR__.'/../../../../views/cmsGenerator.php', $this);
     }
 }
