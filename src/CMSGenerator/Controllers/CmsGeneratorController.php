@@ -27,10 +27,15 @@ class CmsGeneratorController extends Controller {
      */
     private $content;
 
+    protected $selfedit;
+
     /**
      * @Action
+     * @Logged
      */
-    public function index() {
+    public function index($selfedit = "false") {
+        $this->selfedit = $selfedit;
         $this->content->addFile(__DIR__.'/../../../../views/cmsGenerator.php', $this);
+        $this->template->toHtml();
     }
 }
