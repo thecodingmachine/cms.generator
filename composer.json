@@ -5,7 +5,7 @@
   },
 
   "require": {
-    "mouf/mouf": "dev-master",
+    "mouf/mouf": "^2.1.0",
     "mouf/mvc.splash": "~7.0",
     "mouf/database.tdbm": "^4.0.0-beta15",
     "mouf/database.patcher": "~2.0"
