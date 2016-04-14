@@ -33,7 +33,7 @@ class CmsGeneratorController extends Controller {
      */
     public function index($selfedit = "false") {
         $this->selfedit = $selfedit;
-        $this->content->addFile(__DIR__.'../views/cmsGenerator.php', $this);
+        $this->content->addFile(__DIR__.'/../views/cmsGenerator.php', $this);
         $this->template->toHtml();
     }
 }
