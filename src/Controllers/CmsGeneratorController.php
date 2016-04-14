@@ -55,6 +55,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
 
         if(null == $componentName){
             set_user_message("You must define a component name.", UserMessageInterface::ERROR);
+            //header('Location: '.ROOT_URL.'cmsadmin/?name='.$name);
             return new RedirectResponse(ROOT_URL.'cmsadmin/?name='.$name);
         }
         self::sqlGenerate($componentName);
@@ -84,6 +85,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         $tdbmService->generateAllDaosAndBeans($daofactoryclassname, $daonamespace, $beannamespace, $storeInUtc, ($useCustomComposer ? $composerFile : null));
 
         set_user_message("OK.", UserMessageInterface::SUCCESS);
+        //header('Location: '.ROOT_URL.'cmsadmin/?name='.$name);
         return new RedirectResponse(ROOT_URL.'cmsadmin/?name='.$name);
     }
 
