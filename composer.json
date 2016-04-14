@@ -1,7 +1,7 @@
 {
     "name": "mouf/cmsgenerator",
 	"autoload": {
-        "psr-0": {"CMSGenerator": "src/"}
+        "psr-4": {"Mouf\\Cms\\Generator\\": "src/"}
     },
 	
     "require": {
