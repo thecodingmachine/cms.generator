@@ -1,31 +1,32 @@
 {
-    "name": "mouf/cmsgenerator",
-	"autoload": {
-        "psr-4": {"Mouf\\Cms\\Generator\\": "src/"}
-    },
-	
-    "require": {
-        "mouf/mvc.splash": "~7.0",
-        "mouf/database.tdbm": "^4.0.0-beta15",
-        "mouf/database.patcher": "~2.0"
-    },
+  "name": "mouf/cmsgenerator",
+  "autoload": {
+    "psr-4": {"Mouf\\Cms\\Generator\\": "src/"}
+  },
 
-    "extra": {
-      "mouf": {
-        "install": [
-          {
-            "type": "file",
-            "file": "src/install.php",
-            "scope": "global",
-            "description": "Installing CMS Generator"
-          }
-        ],
-        "require-admin": [
-          "src/CmsGeneratorAdmin.php"
-        ]
-      }
-    },
-	
-    "minimum-stability": "dev",
-    "prefer-stable": true
+  "require": {
+    "mouf/mouf": "~2.1",
+    "mouf/mvc.splash": "~7.0",
+    "mouf/database.tdbm": "^4.0.0-beta15",
+    "mouf/database.patcher": "~2.0"
+  },
+
+  "extra": {
+    "mouf": {
+      "install": [
+        {
+          "type": "file",
+          "file": "src/install.php",
+          "scope": "global",
+          "description": "Installing CMS Generator"
+        }
+      ],
+      "require-admin": [
+        "src/CmsGeneratorAdmin.php"
+      ]
+    }
+  },
+
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
