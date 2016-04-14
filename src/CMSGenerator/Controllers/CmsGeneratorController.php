@@ -1,14 +1,12 @@
 <?php
 namespace Mouf\Cms\Generator\Controllers;
 
-use Mouf\Cms\Generator\Model\Dao\Generated\DaoFactory;
 use Mouf\Mvc\Splash\Controllers\Controller;
 use Mouf\Html\Template\TemplateInterface;
 use Mouf\Html\HtmlElement\HtmlBlock;
 use Psr\Log\LoggerInterface;
 use \Twig_Environment;
 use Mouf\Html\Renderer\Twig\TwigTemplate;
-use Mouf\Mvc\Splash\HtmlResponse;
 
 /**
  * TODO: write controller comment
