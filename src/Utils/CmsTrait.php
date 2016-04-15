@@ -7,7 +7,7 @@ use Whoops\Exception\ErrorException;
 /**
  * @author Jean-Baptiste Charron
  */
-class CmsTrait {
+trait CmsTrait {
 
     /**
      * Remove accents from string in parameter
