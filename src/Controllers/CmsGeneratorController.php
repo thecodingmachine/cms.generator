@@ -15,7 +15,7 @@ use Mouf\Html\Renderer\Twig\TwigTemplate;
 use Zend\Diactoros\Response\RedirectResponse;
 
 /**
- * TODO: write controller comment
+ * This controller generates Cms components
  */
 class CmsGeneratorController extends AbstractMoufInstanceController {
 
@@ -55,8 +55,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
 
         if(null == $componentName){
             set_user_message("You must define a component name.", UserMessageInterface::ERROR);
-            //header('Location: '.ROOT_URL.'cmsadmin/?name='.$name);
-            return new RedirectResponse(ROOT_URL.'cmsadmin/?name='.$name);
+            header('Location: '.ROOT_URL.'cmsadmin/?name='.$name);
         }
         self::sqlGenerate($componentName);
 
@@ -84,9 +83,34 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         /* @var $tdbmService TDBMService */
         $tdbmService->generateAllDaosAndBeans($daofactoryclassname, $daonamespace, $beannamespace, $storeInUtc, ($useCustomComposer ? $composerFile : null));
 
-        set_user_message("OK.", UserMessageInterface::SUCCESS);
-        //header('Location: '.ROOT_URL.'cmsadmin/?name='.$name);
-        return new RedirectResponse(ROOT_URL.'cmsadmin/?name='.$name);
+        $rootPath = realpath(ROOT_PATH.'../../../').'/';
+        $beanFileName = $rootPath."src/".$beannamespace."/".ucfirst($componentName)."Bean.php"; // Ex: src/Model/Bean/ComponentnameBean.php
+
+        if(!file_exists($beanFileName)){
+            set_user_message("Fail on editing the Bean", UserMessageInterface::ERROR);
+            header('Location: '.ROOT_URL.'cmsadmin/?name='.$name);
+        }
+
+        $fileContent = file_get_contents($beanFileName);
+
+        $useBaseBean = ucfirst($componentName)."BaseBean;";
+        $useBaseBeanLength = strlen($useBaseBean);
+        $useBaseBeanPos = strpos($fileContent, $useBaseBean); // Search the position of the "ComponentnameBaseBean" in the fileContent
+
+        $useTraitInterface = "\nuse Mouf\\Cms\\Generator\\Utils\\CmsTrait;\nuse Mouf\\Cms\\Generator\\Utils\\CmsInterface;";
+        $fileContent = substr_replace($fileContent, $useTraitInterface, $useBaseBeanPos+$useBaseBeanLength, 0); // Insert the string in the fileContent
+
+        $extendsBaseBean = "extends ".ucfirst($componentName)."BaseBean";
+        $extendsBaseBeanLength = strlen($extendsBaseBean);
+        $extendsBaseBeanPos = strpos($fileContent, $extendsBaseBean); // Search the position of the "extends ComponentnameBaseBean" in the fileContent
+
+        $implementsCmsInsterFace = " implements CmsInterface {\n    use CmsTrait;\n\n";
+        $fileContent = substr_replace($fileContent, $implementsCmsInsterFace, $extendsBaseBeanPos+$extendsBaseBeanLength, -1); // Replace the string in the fileContent
+
+        file_put_contents($beanFileName, $fileContent);
+
+        set_user_message("Component successfully created.", UserMessageInterface::SUCCESS);
+        header('Location: '.ROOT_URL.'cmsadmin/?name='.$name);
     }
 
     /**
@@ -105,7 +129,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         $baseDirUpSqlFile = dirname($rootPath.$upSqlFileName);
         $baseDirDownSqlFile = dirname($rootPath.$downSqlFileName);
 
-        $upSql = "CREATE TABLE IF NOT EXISTS `".$componentName."` (
+        $upSql = "CREATE TABLE IF NOT EXISTS `".htmlspecialchars($componentName)."` (
                           `id` int(11) NOT NULL AUTO_INCREMENT,
                           `title` varchar(255) NOT NULL DEFAULT '',
                           `slug` varchar(255) NOT NULL DEFAULT '',
@@ -115,7 +139,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
                           PRIMARY KEY (`id`)
                         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
-        $downSql = "DROP TABLE IF EXISTS `".$componentName."`";
+        $downSql = "DROP TABLE IF EXISTS `".htmlspecialchars($componentName)."`";
 
         // Let's create the directory
         if (!file_exists($baseDirUpSqlFile)) {
