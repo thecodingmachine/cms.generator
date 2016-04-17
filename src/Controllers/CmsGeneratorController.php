@@ -5,8 +5,10 @@ use Mouf\Cms\Generator\Services\CMSControllerGeneratorService;
 use Mouf\Controllers\AbstractMoufInstanceController;
 use Mouf\Database\Patcher\DatabasePatchInstaller;
 use Mouf\Database\TDBM\TDBMService;
+use Mouf\Database\TDBM\Utils\TDBMDaoGenerator;
 use Mouf\Html\Widgets\MessageService\Service\UserMessageInterface;
 use Mouf\InstanceProxy;
+use Mouf\MoufManager;
 use Mouf\Mvc\Splash\Controllers\Controller;
 use Mouf\Html\Template\TemplateInterface;
 use Mouf\Html\HtmlElement\HtmlBlock;
@@ -76,17 +78,40 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         $daonamespace = $this->moufManager->getVariable('tdbmDefaultDaoNamespace');
         $beannamespace = $this->moufManager->getVariable('tdbmDefaultBeanNamespace');
         $daofactoryclassname = $this->moufManager->getVariable('tdbmDefaultDaoFactoryName');
+        $daofactoryinstancename = $this->moufManager->getVariable('tdbmDefaultDaoFactoryInstanceName');
         $storeInUtc = $this->moufManager->getVariable('tdbmDefaultStoreInUtc');
         $useCustomComposer = $this->moufManager->getVariable('tdbmDefaultUseCustomComposer');
         $composerFile = $this->moufManager->getVariable('tdbmDefaultComposerFile');
 
         $tdbmService = new InstanceProxy($name);
         /* @var $tdbmService TDBMService */
-        $tdbmService->generateAllDaosAndBeans($daofactoryclassname, $daonamespace, $beannamespace, $storeInUtc, ($useCustomComposer ? $composerFile : null));
+        $tables = $tdbmService->generateAllDaosAndBeans($daofactoryclassname, $daonamespace, $beannamespace, $storeInUtc, ($useCustomComposer ? $composerFile : null));
 
+        $this->moufManager->declareComponent($daofactoryinstancename, $daonamespace.'\\Generated\\'.$daofactoryclassname, false, MoufManager::DECLARE_ON_EXIST_KEEP_INCOMING_LINKS);
+
+        $tableToBeanMap = [];
+
+        //$tdbmServiceDescriptor = $moufManager->getInstanceDescriptor('tdbmService');
+
+        foreach ($tables as $table) {
+            $daoName = TDBMDaoGenerator::getDaoNameFromTableName($table);
+
+            $instanceName = TDBMDaoGenerator::toVariableName($daoName);
+            if (!$this->moufManager->instanceExists($instanceName)) {
+                $this->moufManager->declareComponent($instanceName, $daonamespace.'\\'.$daoName);
+            }
+            $this->moufManager->setParameterViaConstructor($instanceName, 0, $name, 'object');
+            $this->moufManager->bindComponentViaSetter($daofactoryinstancename, 'set'.$daoName, $instanceName);
+
+            $tableToBeanMap[$table] = $beannamespace.'\\'.TDBMDaoGenerator::getBeanNameFromTableName($table);
+        }
+        $tdbmServiceDescriptor = $this->moufManager->getInstanceDescriptor($name);
+        $tdbmServiceDescriptor->getSetterProperty('setTableToBeanMap')->setValue($tableToBeanMap);
         $this->moufManager->rewriteMouf();
 
         $rootPath = realpath(ROOT_PATH.'../../../').'/';
+
+        // Let's insert uses in the Bean
         $beanFileName = $rootPath."src/".$beannamespace."/".ucfirst($componentName)."Bean.php"; // Ex: src/Model/Bean/ComponentnameBean.php
 
         if(!file_exists($beanFileName)){
@@ -100,47 +125,102 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         $useBaseBeanLength = strlen($useBaseBean);
         $useBaseBeanPos = strpos($fileContent, $useBaseBean); // Search the position of the "ComponentnameBaseBean" in the fileContent
 
-        $useTraitInterface = "\nuse Mouf\\Cms\\Generator\\Utils\\CmsTrait;\nuse Mouf\\Cms\\Generator\\Utils\\CmsInterface;\nuse Mouf\\Html\\HtmlElement\\HtmlElementInterface;\nuse Mouf\\Html\\Renderer\\Renderable;\n";
+        $useTraitInterface = "\nuse Mouf\\Cms\\Generator\\Utils\\CmsTrait;\nuse Mouf\\Cms\\Generator\\Utils\\CmsInterface;\n";
         $fileContent = substr_replace($fileContent, $useTraitInterface, $useBaseBeanPos+$useBaseBeanLength, 0); // Insert the string in the fileContent
 
         $extendsBaseBean = "extends ".ucfirst($componentName)."BaseBean";
         $extendsBaseBeanLength = strlen($extendsBaseBean);
         $extendsBaseBeanPos = strpos($fileContent, $extendsBaseBean); // Search the position of the "extends ComponentnameBaseBean" in the fileContent
 
-        $implementsCmsInsterFace = " implements CmsInterface, HtmlElementInterface {\n    use CmsTrait;\n    use Renderable;\n\n";
+        $implementsCmsInsterFace = " implements CmsInterface {\n    use CmsTrait;\n\n";
         $fileContent = substr_replace($fileContent, $implementsCmsInsterFace, $extendsBaseBeanPos+$extendsBaseBeanLength, -1); // Replace the string in the fileContent
 
         file_put_contents($beanFileName, $fileContent);
 
+        // Let's create a method in the Dao
+        $daoFileName = $rootPath."src/".$daonamespace."/".ucfirst($componentName)."Dao.php"; // Ex: src/Model/Dao/ComponentnameDao.php
+
+        if(!file_exists($daoFileName)){
+            set_user_message("Fail on editing the Dao", UserMessageInterface::ERROR);
+            header('Location: '.ROOT_URL.'cmsadmin/?name='.$name);
+        }
+
+        $fileContent = file_get_contents($daoFileName);
+
+        $extendsBaseDao = "extends ".ucfirst($componentName)."BaseDao";
+        $extendsBaseDaoLength = strlen($extendsBaseDao);
+        $extendsBaseDaoPos = strpos($fileContent, $extendsBaseDao);
+
+        $getBySlug = "\n{
+    /**
+     * @param string \$slug
+     * @return \\".$beannamespace."\\".ucfirst($componentName)."Bean
+     */
+    public function getBySlug(\$slug) {
+        return \$this->findOne('slug = :slug', array('slug' => addslashes(\$slug)));
+    }
+}";
+        $fileContent = substr_replace($fileContent, $getBySlug, $extendsBaseDaoPos+$extendsBaseDaoLength, -1); // Insert the string in the fileContent
+
+        file_put_contents($daoFileName, $fileContent);
 
         $namespace = $this->moufManager->getVariable('splashDefaultControllersNamespace');
-        $viewDir = $this->moufManager->getVariable('splashDefaultViewsDirectory');
+        $viewDir = "vendor/mouf/cmsgenerator/src/views/";
         $controllerGenerator  = new CMSControllerGeneratorService();
 
         $actions = [
             [
                 'view' => 'twig',
-                'url' => '/list',
+                'url' => strtolower($componentName).'/list',
                 'anyMethod' => false,
                 'getMethod' => true,
                 'postMethod' => false,
                 'putMethod' => false,
                 'deleteMethod' => false,
-                'method' => 'displayItemsList',
-                'twigFile' => $viewDir.'list.twig',
+                'method' => 'displayFrontList',
                 'code' =>
                     '
-                    $items = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
-                    
-                    '
+        $items = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
+        $itemUrl = "'.strtolower($componentName).'/";
+        $itemUrlEdit = "'.strtolower($componentName).'/admin/edit?id=";
+        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.'front/list.twig'.'",
+            array(
+                "items"=>$items,
+                "itemUrl"=>$itemUrl,
+                "itemUrlEdit"=>$itemUrlEdit
+            )));
+        '
             ],
             [
                 'view' => 'twig',
-                'url' => '/edit',
+                'url' => strtolower($componentName).'/admin/list',
+                'anyMethod' => false,
+                'getMethod' => true,
+                'postMethod' => false,
+                'putMethod' => false,
+                'deleteMethod' => false,
+                'method' => 'displayBackList',
+                'code' =>
+                    '
+        $items = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
+        $itemUrl = "'.strtolower($componentName).'/";
+        $itemUrlEdit = "'.strtolower($componentName).'/admin/edit?id=";
+        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.'back/list.twig'.'",
+            array(
+                "items"=>$items,
+                "itemUrl"=>$itemUrl,
+                "itemUrlEdit"=>$itemUrlEdit
+            )));
+        '
+            ],
+            [
+                'view' => 'twig',
+                'url' => strtolower($componentName).'/admin/edit',
                 'parameters' => [
                     [
-                        'optionnal' => false,
-                        'type' => 'int',
+                        'optionnal' => true,
+                        'defaultValue' => null,
+                        'type' => 'int|null',
                         'name' => 'id',
                     ]
                 ],
@@ -149,23 +229,77 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
                 'postMethod' => false,
                 'putMethod' => false,
                 'deleteMethod' => false,
-                'method' => 'edit',
-                'twigFile' => $viewDir.'edit.twig',
+                'method' => 'editItem',
                 'code' =>
                     '
-                    $item = $this->daoFactory->get'.ucfirst($componentName).'Dao()->getById($id);
-                    $item->setContext("displayBack");
-                    $this->content->addHtmlElement($item);
-                    '
+        $item = null;
+        $itemUrl = "'.strtolower($componentName).'/";
+        $itemSaveUrl = "'.strtolower($componentName).'/admin/save";
+        if(isset($id)){
+            $item = $this->daoFactory->get'.ucfirst($componentName).'Dao()->getById($id);
+        }
+        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.'back/edit.twig'.'",
+            array(
+                "item"=>$item,
+                "itemUrl"=>$itemUrl,
+                "itemSaveUrl"=>$itemSaveUrl
+            )));
+        '
             ],
             [
-                'view' => 'redirect',
-                'url' => '/save',
+                'view' => 'twig',
+                'url' => strtolower($componentName).'/{slug}',
                 'parameters' => [
                     [
                         'optionnal' => false,
-                        'type' => 'int',
+                        'type' => 'string',
+                        'name' => 'slug',
+                    ]
+                ],
+                'anyMethod' => false,
+                'getMethod' => true,
+                'postMethod' => false,
+                'putMethod' => false,
+                'deleteMethod' => false,
+                'method' => 'displayItem',
+                'code' =>
+                    '
+        $item = $this->daoFactory->get'.ucfirst($componentName).'Dao()->getBySlug($slug);
+        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.'front/item.twig'.'", array("item"=>$item)));
+        '
+            ],
+            [
+                'view' => 'redirect',
+                'url' => strtolower($componentName).'/admin/save',
+                'parameters' => [
+                    [
+                        'optionnal' => false,
+                        'type' => 'string',
+                        'name' => 'title',
+                    ],
+                    [
+                        'optionnal' => true,
+                        'type' => 'int|null',
                         'name' => 'id',
+                        'defaultValue' => null
+                    ],
+                    [
+                        'optionnal' => true,
+                        'type' => 'string',
+                        'name' => 'shortText',
+                        'defaultValue' => ''
+                    ],
+                    [
+                        'optionnal' => true,
+                        'type' => 'string',
+                        'name' => 'content',
+                        'defaultValue' => ''
+                    ],
+                    [
+                        'optionnal' => true,
+                        'type' => 'array',
+                        'name' => 'vignette',
+                        'defaultValue' => array()
                     ],
                 ],
                 'anyMethod' => false,
@@ -174,15 +308,38 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
                 'putMethod' => false,
                 'deleteMethod' => false,
                 'method' => 'save',
-                'redirect' => '/list',
+                'redirect' => strtolower($componentName).'/admin/list',
                 'code' =>
                     '
-                    $items = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
-                    
-                    '
+        if(isset($id)) {
+            $item = $this->daoFactory->get'.ucfirst($componentName).'Dao()->getById($id);
+        } else {
+            $item = new '.ucfirst($componentName).'Bean();
+        }
+        $slug = $item->slugify($title);
+        $item->setTitle($title);
+        $item->setSlug($slug);
+        $item->setShortText($shortText);
+        $item->setContent($content);
+        $this->daoFactory->get'.ucfirst($componentName).'Dao()->save($item);
+
+        $uploadDir = ROOT_PATH."public/media/'.strtolower($componentName).'/".$item->getId()."/";
+        $uploadUrl = ROOT_URL."public/media/'.strtolower($componentName).'/".$item->getId()."/";
+
+        if(isset($_FILES)){
+            if(isset($_FILES["vignette"]) && $_FILES["vignette"]["error"] != 4){
+                $docName = $item->saveFile($_FILES["vignette"], $uploadDir, array("jpg", "png", "jpeg", "bmp"));
+
+                $item->setImage($uploadUrl.$docName);
+                $this->daoFactory->get'.ucfirst($componentName).'Dao()->save($item);
+            }
+        }
+
+        set_user_message("Item successfully created !",UserMessageInterface::SUCCESS);
+        '
             ],
         ];
-        $controllerGenerator->generate($this->moufManager, $componentName.'Controller', strtolower($componentName).'Controller', $namespace, false, true, true, $actions);
+        $controllerGenerator->generate($this->moufManager, $componentName.'Controller', strtolower($componentName).'Controller', $namespace, $componentName, false, true, true, $actions);
 
         set_user_message("Component successfully created.", UserMessageInterface::SUCCESS);
         header('Location: '.ROOT_URL.'cmsadmin/?name='.$name);
@@ -211,6 +368,8 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
                           `short_text` text  DEFAULT NULL,
                           `content` text  DEFAULT NULL,
                           `image` text  DEFAULT NULL,
+                          `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                          `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                           PRIMARY KEY (`id`)
                         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 

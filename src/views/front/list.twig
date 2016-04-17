@@ -8,23 +8,23 @@
         <div class="row blog-item">
             <div class="col-md-4">
                 <div class="blog-image-holder">
-                    <a href="{{ constant('ROOT_URL') ~ "item/" ~ item.slug }}"><img src="{{ item.image }}"></a>
+                    <a href="{{ constant('ROOT_URL') ~ itemUrl ~ item.slug }}"><img src="{{ item.image }}"></a>
                 </div>
             </div>
             <div class="col-md-8">
                 <div class="row blog-title">
                     <div class="col-md-12">
-                        <h2><a href="{{ constant('ROOT_URL') ~ "item/" ~ item.slug }}">{{ item.title }}</a></h2>
+                        <h2><a href="{{ constant('ROOT_URL') ~ itemUrl ~ item.slug }}">{{ item.title }}</a></h2>
                     </div>
                 </div>
                 <div class="row blog-description">
                     <div class="col-md-12">
-                        {{ item.short_text|striptags }}{% if item.short_text|length > 350 %}...{% endif %}
+                        {{ item.shortText|striptags }}{% if item.short_text|length > 350 %}...{% endif %}
                     </div>
                 </div>
                 <div class="row blog-cta">
                     <div class="col-md-12">
-                        <a class="btn btn-primary pull-right" href="{{ constant('ROOT_URL') ~ "item/" ~ item.slug }}">Read more</a>
+                        <a class="btn btn-primary pull-right" href="{{ constant('ROOT_URL') ~ itemUrlEdit ~ item.id }}">Edit</a>
                     </div>
                 </div>
             </div>

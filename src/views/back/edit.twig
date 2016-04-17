@@ -5,7 +5,7 @@
                 <div class="col-md-12">
                     {% if item %}
                         <h1 class="pull-left">{{ item.title }}</h1>
-                        <a href="{{ constant('ROOT_URL') ~ 'item/' ~ item.slug }}" class="btn btn-violet pull-right">See item</a>
+                        <a href="{{ constant('ROOT_URL') ~ itemUrl ~ item.slug }}" class="btn btn-violet pull-right">See item</a>
                     {% else %}
                         <h1 class="pull-left">Create item</h1>
                     {% endif %}
@@ -20,7 +20,7 @@
             {% else %}
                 <h2>Create form</h2>
             {% endif %}
-            <form id="itemForm" action="{{ constant('ROOT_URL') }}item/save" method="post" enctype="multipart/form-data">
+            <form id="itemForm" action="{{ constant('ROOT_URL') ~ itemSaveUrl }}" method="post" enctype="multipart/form-data">
                 {% if item %}
                     <input type="hidden" name="id" value="{{ item.id }}">
                 {% endif %}
