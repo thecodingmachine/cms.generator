@@ -84,6 +84,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         /* @var $tdbmService TDBMService */
         $tdbmService->generateAllDaosAndBeans($daofactoryclassname, $daonamespace, $beannamespace, $storeInUtc, ($useCustomComposer ? $composerFile : null));
 
+        $this->moufManager->rewriteMouf();
 
         $rootPath = realpath(ROOT_PATH.'../../../').'/';
         $beanFileName = $rootPath."src/".$beannamespace."/".ucfirst($componentName)."Bean.php"; // Ex: src/Model/Bean/ComponentnameBean.php
@@ -99,19 +100,19 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         $useBaseBeanLength = strlen($useBaseBean);
         $useBaseBeanPos = strpos($fileContent, $useBaseBean); // Search the position of the "ComponentnameBaseBean" in the fileContent
 
-        $useTraitInterface = "\nuse Mouf\\Cms\\Generator\\Utils\\CmsTrait;\nuse Mouf\\Cms\\Generator\\Utils\\CmsInterface;";
+        $useTraitInterface = "\nuse Mouf\\Cms\\Generator\\Utils\\CmsTrait;\nuse Mouf\\Cms\\Generator\\Utils\\CmsInterface;\nuse Mouf\\Html\\HtmlElement\\HtmlElementInterface;\nuse Mouf\\Html\\Renderer\\Renderable;\n";
         $fileContent = substr_replace($fileContent, $useTraitInterface, $useBaseBeanPos+$useBaseBeanLength, 0); // Insert the string in the fileContent
 
         $extendsBaseBean = "extends ".ucfirst($componentName)."BaseBean";
         $extendsBaseBeanLength = strlen($extendsBaseBean);
         $extendsBaseBeanPos = strpos($fileContent, $extendsBaseBean); // Search the position of the "extends ComponentnameBaseBean" in the fileContent
 
-        $implementsCmsInsterFace = " implements CmsInterface {\n    use CmsTrait;\n\n";
+        $implementsCmsInsterFace = " implements CmsInterface, HtmlElementInterface {\n    use CmsTrait;\n    use Renderable;\n\n";
         $fileContent = substr_replace($fileContent, $implementsCmsInsterFace, $extendsBaseBeanPos+$extendsBaseBeanLength, -1); // Replace the string in the fileContent
 
         file_put_contents($beanFileName, $fileContent);
-            
-        
+
+
         $namespace = $this->moufManager->getVariable('splashDefaultControllersNamespace');
         $viewDir = $this->moufManager->getVariable('splashDefaultViewsDirectory');
         $controllerGenerator  = new CMSControllerGeneratorService();
@@ -125,7 +126,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
                 'postMethod' => false,
                 'putMethod' => false,
                 'deleteMethod' => false,
-                'method' => 'list',
+                'method' => 'displayItemsList',
                 'twigFile' => $viewDir.'list.twig',
                 'code' =>
                     '
@@ -152,8 +153,9 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
                 'twigFile' => $viewDir.'edit.twig',
                 'code' =>
                     '
-                    $items = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
-                    
+                    $item = $this->daoFactory->get'.ucfirst($componentName).'Dao()->getById($id);
+                    $item->setContext("displayBack");
+                    $this->content->addHtmlElement($item);
                     '
             ],
             [
