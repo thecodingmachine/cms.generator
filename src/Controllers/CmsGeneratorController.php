@@ -1,6 +1,7 @@
 <?php
 namespace Mouf\Cms\Generator\Controllers;
 
+use Mouf\Cms\Generator\Services\CMSControllerGeneratorService;
 use Mouf\Controllers\AbstractMoufInstanceController;
 use Mouf\Database\Patcher\DatabasePatchInstaller;
 use Mouf\Database\TDBM\TDBMService;
@@ -83,6 +84,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         /* @var $tdbmService TDBMService */
         $tdbmService->generateAllDaosAndBeans($daofactoryclassname, $daonamespace, $beannamespace, $storeInUtc, ($useCustomComposer ? $composerFile : null));
 
+
         $rootPath = realpath(ROOT_PATH.'../../../').'/';
         $beanFileName = $rootPath."src/".$beannamespace."/".ucfirst($componentName)."Bean.php"; // Ex: src/Model/Bean/ComponentnameBean.php
 
@@ -108,6 +110,77 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         $fileContent = substr_replace($fileContent, $implementsCmsInsterFace, $extendsBaseBeanPos+$extendsBaseBeanLength, -1); // Replace the string in the fileContent
 
         file_put_contents($beanFileName, $fileContent);
+            
+        
+        $namespace = $this->moufManager->getVariable('splashDefaultControllersNamespace');
+        $viewDir = $this->moufManager->getVariable('splashDefaultViewsDirectory');
+        $controllerGenerator  = new CMSControllerGeneratorService();
+
+        $actions = [
+            [
+                'view' => 'twig',
+                'url' => '/list',
+                'anyMethod' => false,
+                'getMethod' => true,
+                'postMethod' => false,
+                'putMethod' => false,
+                'deleteMethod' => false,
+                'method' => 'list',
+                'twigFile' => $viewDir.'list.twig',
+                'code' =>
+                    '
+                    $items = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
+                    
+                    '
+            ],
+            [
+                'view' => 'twig',
+                'url' => '/edit',
+                'parameters' => [
+                    [
+                        'optionnal' => false,
+                        'type' => 'int',
+                        'name' => 'id',
+                    ]
+                ],
+                'anyMethod' => false,
+                'getMethod' => true,
+                'postMethod' => false,
+                'putMethod' => false,
+                'deleteMethod' => false,
+                'method' => 'edit',
+                'twigFile' => $viewDir.'edit.twig',
+                'code' =>
+                    '
+                    $items = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
+                    
+                    '
+            ],
+            [
+                'view' => 'redirect',
+                'url' => '/save',
+                'parameters' => [
+                    [
+                        'optionnal' => false,
+                        'type' => 'int',
+                        'name' => 'id',
+                    ],
+                ],
+                'anyMethod' => false,
+                'getMethod' => false,
+                'postMethod' => true,
+                'putMethod' => false,
+                'deleteMethod' => false,
+                'method' => 'save',
+                'redirect' => '/list',
+                'code' =>
+                    '
+                    $items = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
+                    
+                    '
+            ],
+        ];
+        $controllerGenerator->generate($this->moufManager, $componentName.'Controller', strtolower($componentName).'Controller', $namespace, false, true, true, $actions);
 
         set_user_message("Component successfully created.", UserMessageInterface::SUCCESS);
         header('Location: '.ROOT_URL.'cmsadmin/?name='.$name);
@@ -133,9 +206,9 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
                           `id` int(11) NOT NULL AUTO_INCREMENT,
                           `title` varchar(255) NOT NULL DEFAULT '',
                           `slug` varchar(255) NOT NULL DEFAULT '',
-                          `short_text` text NOT NULL DEFAULT '',
-                          `content` text NOT NULL DEFAULT '',
-                          `image` text NOT NULL DEFAULT '',
+                          `short_text` text  DEFAULT NULL,
+                          `content` text  DEFAULT NULL,
+                          `image` text  DEFAULT NULL,
                           PRIMARY KEY (`id`)
                         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
@@ -188,5 +261,6 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         file_put_contents($rootPath.$downSqlFileName, $downSql);
         // Chmod may fail if the file does not belong to the Apache user.
         @chmod($rootPath.$downSqlFileName, 0664);
+
     }
 }
