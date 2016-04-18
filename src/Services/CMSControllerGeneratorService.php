@@ -332,7 +332,7 @@ class CMSControllerGeneratorService
                     return new JsonResponse([ "status"=>"ok" ]);
                 <?php elseif ($action['view'] == 'redirect'): ?>
 
-                    return new RedirectResponse(<?php var_export($action['redirect']);
+                    return new RedirectResponse(ROOT_URL.<?php var_export($action['redirect']);
                     ?>);
                 <?php endif;
                     ?>
