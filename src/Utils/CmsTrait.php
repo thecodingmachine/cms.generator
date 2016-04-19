@@ -53,7 +53,8 @@ trait CmsTrait {
      */
     public function slugifyFile($fileName) {
         // Retrieve extension
-        $extension =  end(explode(".", $fileName));
+        $explodedFileName =  explode(".", $fileName);
+        $extension = end($explodedFileName);
 
         // Remove extension
         $string = preg_replace('/.[^.]*$/', '', $fileName);

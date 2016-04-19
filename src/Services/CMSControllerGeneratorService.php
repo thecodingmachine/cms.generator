@@ -284,17 +284,17 @@ class CMSControllerGeneratorService
                     /**
                     * @URL <?= $action['url'] ?>
 
-                    <?php if ($action['anyMethod'] == 'false') {
-                    if ($action['getMethod'] == 'true') {
+                    <?php if ($action['anyMethod'] == false) {
+                    if ($action['getMethod'] == true) {
                         echo "     * @Get\n";
                     }
-                    if ($action['postMethod'] == 'true') {
+                    if ($action['postMethod'] == true) {
                         echo "     * @Post\n";
                     }
-                    if ($action['putMethod'] == 'true') {
+                    if ($action['putMethod'] == true) {
                         echo "     * @Put\n";
                     }
-                    if ($action['deleteMethod'] == 'true') {
+                    if ($action['deleteMethod'] == true) {
                         echo "     * @Delete\n";
                     }
                 }
@@ -305,6 +305,13 @@ class CMSControllerGeneratorService
                         }
                     } else {
                         $parameters = array();
+                    }
+                    if ($injectTemplate && ($action['view'] == 'twig' || $action['view'] == 'php')) {
+                        echo "    * @return HtmlResponse\n";
+                    } elseif ($action['view'] == 'json') {
+                        echo "    * @return JsonResponse\n";
+                    } elseif ($action['view'] == 'redirect') {
+                        echo "    * @return RedirectResponse\n";
                     }
                     ?>
                     */
