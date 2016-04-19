@@ -19,13 +19,19 @@ class CMSControllerGeneratorService
     /**
      * Generates a controller, view, and sets the instance up.
      *
+     * @param MoufManager $moufManager
      * @param string $controllerName
      * @param string $instanceName
      * @param string $namespace
-     * @param string $injectLogger
-     * @param string $injectTemplate
-     * @param string $injectDaoFactory
-     * @param array  $actions
+     * @param $componentName
+     * @param bool|string $injectLogger
+     * @param bool|string $injectTemplate
+     * @param bool|string $injectDaoFactory
+     * @param array $actions
+     *
+     * @throws SplashCreateControllerServiceException
+     * @throws SplashException
+     * @throws \Mouf\MoufException
      */
     public function generate(MoufManager $moufManager, $controllerName, $instanceName, $namespace, $componentName, $injectLogger = false,
                              $injectTemplate = false, $injectDaoFactory = false, $actions = array())

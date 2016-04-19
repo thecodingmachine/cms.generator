@@ -238,6 +238,12 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         if(isset($id)){
             $item = $this->daoFactory->get'.ucfirst($componentName).'Dao()->getById($id);
         }
+        $webLibrary = new WebLibrary(
+            ["//cdn.ckeditor.com/4.5.2/standard/ckeditor.js"],
+            []
+        );
+
+        $this->template->getWebLibraryManager()->addLibrary($webLibrary);
         $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.'back/edit.twig'.'",
             array(
                 "item"=>$item,

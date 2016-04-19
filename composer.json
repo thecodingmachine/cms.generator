@@ -8,8 +8,7 @@
     "mouf/mvc.splash": "~7.0",
     "mouf/database.tdbm": "^4.0.0-beta15",
     "mouf/database.patcher": "~2.0",
-    "mouf/html.htmlelement": "~2.0",
-    "ckeditor/ckeditor": "4.*"
+    "mouf/html.htmlelement": "~2.0"
   },
 
   "extra": {
