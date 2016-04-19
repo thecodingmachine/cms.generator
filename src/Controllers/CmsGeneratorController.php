@@ -298,7 +298,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
                     [
                         'optionnal' => true,
                         'type' => 'string',
-                        'name' => 'content',
+                        'name' => 'itemContent',
                         'defaultValue' => ''
                     ],
                     [
@@ -326,7 +326,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         $item->setTitle($title);
         $item->setSlug($slug);
         $item->setShortText($shortText);
-        $item->setContent($content);
+        $item->setContent($itemContent);
         $this->daoFactory->get'.ucfirst($componentName).'Dao()->save($item);
 
         $uploadDir = ROOT_PATH."public/media/'.strtolower($componentName).'/".$item->getId()."/";

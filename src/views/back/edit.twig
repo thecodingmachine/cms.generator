@@ -29,7 +29,7 @@
                     <input type="text" name="title" class="form-control" value="{{ item.title }}" placeholder="Title" required="required">
                 </div>
                 <div class="form-group">
-                    <label for="summary">Summary : </label>
+                    <label for="shortText">Summary : </label>
                     <textarea name="shortText" id="shortText" rows="10" cols="80" placeholder="Summary">
                         {% if item %}
                             {{ item.shortText }}
@@ -37,8 +37,8 @@
                     </textarea>
                 </div>
                 <div class="form-group">
-                    <label for="content">Content : </label>
-                    <textarea name="content" id="content" rows="10" cols="80" placeholder="Content">
+                    <label for="itemContent">Content : </label>
+                    <textarea name="itemContent" id="itemContent" rows="10" cols="80" placeholder="Content">
                         {% if item %}
                             {{ item.content }}
                         {% endif %}
@@ -68,7 +68,7 @@
 </div>
 
 <script>
-    // Replace the <textarea id="editor1"> with a CKEditor
+    // Replace the <textarea id="shortText"> with a CKEditor
     // instance, using default configuration.
     CKEDITOR.replace( 'shortText', {
         language: 'fr',
@@ -77,9 +77,9 @@
 </script>
 
 <script>
-    // Replace the <textarea id="editor1"> with a CKEditor
+    // Replace the <textarea id="itemContent"> with a CKEditor
     // instance, using default configuration.
-    CKEDITOR.replace( 'content', {
+    CKEDITOR.replace( 'itemContent', {
         language: 'fr',
         uiColor: '#ffffff'
     } );
