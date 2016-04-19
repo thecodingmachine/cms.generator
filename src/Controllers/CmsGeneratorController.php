@@ -278,21 +278,17 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
 
         $evoluGridRs->addColumn(new SimpleColumn("Title", "title", true));
         $evoluGridRs->addColumn(new TwigColumn("Creation date", "{{ created_at | date(\'d-m-Y H:i:s\') }}", "created_at"));
-        $evoluGridRs->addColumn(new JsColumn("Edition",
-            \'$ret = "function(row) {
-                return $(\"<a class=\"btn btn - xs btn - azure\" href=\" ../blog / "+row.slug+"/edit\" target=\"_blank\"><i class=\"fa fa-pencil\"></i>
-                <a class=\"btn btn-xs btn-danger confirmation\" href=\"../blog/"+row.slug+"/delete\"><i class=\"fa fa-trash\"></i>";
-            }";
-
-            return $ret;\'
-        ));
+        $evoluGridRs->addColumn(new TwigColumn("Edition",
+            "<a class=\'btn btn-xs btn-primary\' href=\'edit?id={{ id }}\' target=\'_blank\'><i class=\'glyphicon glyphicon-pencil\'></i></a>".
+            "<a class=\'btn btn-xs btn-danger\' href=\'delete?id={{ id }}\' target=\'_blank\'><i class=\'glyphicon glyphicon-trash\'></i></a>"));
 
         $data = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
         $rows = $data->take($offset, $limit);
 
-        $evoluGridRs->setResults($rows);
+        $evoluGridRs->setResults($rows->jsonSerialize());
         $evoluGridRs->setTotalRowsCount($data->count());
-        $evoluGridRs->output($output);
+        $evoluGridRs->setFormat($output);
+        return $evoluGridRs->run();
         '
             ],
             [
@@ -354,6 +350,33 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
                     '
         $item = $this->daoFactory->get'.ucfirst($componentName).'Dao()->getBySlug($slug);
         $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.strtolower($componentName)."/".'front/item.twig'.'", array("item"=>$item)));
+        '
+            ],
+            [
+                'view' => null,
+                'url' => strtolower($componentName).'/admin/delete',
+                'parameters' => [
+                    [
+                        'optionnal' => false,
+                        'type' => 'int',
+                        'name' => 'id',
+                    ]
+                ],
+                'anyMethod' => false,
+                'getMethod' => true,
+                'postMethod' => false,
+                'putMethod' => false,
+                'deleteMethod' => false,
+                'method' => 'deleteItem',
+                'code' =>
+                    '
+        $deleted = false;
+        if(isset($id)){
+            $item = $this->daoFactory->get'.ucfirst($componentName).'Dao()->getById($id);
+            $this->daoFactory->get'.ucfirst($componentName).'Dao()->delete($item);
+            $deleted = true;
+        }
+        return $deleted;
         '
             ],
             [
