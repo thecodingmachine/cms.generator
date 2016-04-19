@@ -112,7 +112,7 @@ trait CmsTrait {
         $extension = strtolower(pathinfo($uploadedFile['name'], PATHINFO_EXTENSION));
 
         if (!is_dir($uploadDir)) {
-            mkdir($uploadDir);
+            mkdir($uploadDir, 0, true);
         }
 
         // Craft the complete name of the file
