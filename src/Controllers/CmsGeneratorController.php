@@ -91,8 +91,6 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
 
         $tableToBeanMap = [];
 
-        //$tdbmServiceDescriptor = $moufManager->getInstanceDescriptor('tdbmService');
-
         foreach ($tables as $table) {
             $daoName = TDBMDaoGenerator::getDaoNameFromTableName($table);
 
@@ -164,8 +162,32 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
 
         file_put_contents($daoFileName, $fileContent);
 
+        // Let's create the views directories
         $namespace = $this->moufManager->getVariable('splashDefaultControllersNamespace');
-        $viewDir = "vendor/mouf/cmsgenerator/src/views/";
+        $vendorViewDir = $rootPath."vendor/mouf/cmsgenerator/src/views/";
+        $viewDir = $this->moufManager->getVariable('splashDefaultViewsDirectory');
+
+        $backPath = "back/";
+        $frontPath = "front/";
+
+        $backEditContent = file_get_contents($vendorViewDir.$backPath."edit.twig");
+        $backListContent = file_get_contents($vendorViewDir.$backPath."list.twig");
+        $frontItemContent = file_get_contents($vendorViewDir.$frontPath."item.twig");
+        $frontListContent = file_get_contents($vendorViewDir.$frontPath."list.twig");
+
+        if(!is_dir($rootPath.$viewDir.$backPath)) {
+            mkdir($rootPath.$viewDir.strtolower($componentName)."/".$backPath, 0, true);
+        }
+        if(!is_dir($rootPath.$viewDir.$frontPath)) {
+            mkdir($rootPath.$viewDir.strtolower($componentName)."/".$frontPath, 0, true);
+        }
+
+        file_put_contents($rootPath.$viewDir.strtolower($componentName)."/".$backPath."edit.twig",$backEditContent);
+        file_put_contents($rootPath.$viewDir.strtolower($componentName)."/".$backPath."list.twig",$backListContent);
+        file_put_contents($rootPath.$viewDir.strtolower($componentName)."/".$frontPath."item.twig",$frontItemContent);
+        file_put_contents($rootPath.$viewDir.strtolower($componentName)."/".$frontPath."list.twig",$frontListContent);
+
+        // Let's generate the new component Controller
         $controllerGenerator  = new CMSControllerGeneratorService();
 
         $actions = [
@@ -183,7 +205,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         $items = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
         $itemUrl = "'.strtolower($componentName).'/";
         $itemUrlEdit = "'.strtolower($componentName).'/admin/edit?id=";
-        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.'front/list.twig'.'",
+        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.strtolower($componentName)."/".'front/list.twig'.'",
             array(
                 "items"=>$items,
                 "itemUrl"=>$itemUrl,
@@ -205,7 +227,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         $items = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
         $itemUrl = "'.strtolower($componentName).'/";
         $itemUrlEdit = "'.strtolower($componentName).'/admin/edit?id=";
-        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.'back/list.twig'.'",
+        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.strtolower($componentName)."/".'back/list.twig'.'",
             array(
                 "items"=>$items,
                 "itemUrl"=>$itemUrl,
@@ -244,7 +266,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         );
 
         $this->template->getWebLibraryManager()->addLibrary($webLibrary);
-        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.'back/edit.twig'.'",
+        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.strtolower($componentName)."/".'back/edit.twig'.'",
             array(
                 "item"=>$item,
                 "itemUrl"=>$itemUrl,
@@ -271,7 +293,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
                 'code' =>
                     '
         $item = $this->daoFactory->get'.ucfirst($componentName).'Dao()->getBySlug($slug);
-        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.'front/item.twig'.'", array("item"=>$item)));
+        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.strtolower($componentName)."/".'front/item.twig'.'", array("item"=>$item)));
         '
             ],
             [

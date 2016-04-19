@@ -1,28 +1,28 @@
 <div class="container">
-    <div class="row blog-title">
+    <div class="row">
         <div class="col-md-12">
             <h1>Items list</h1>
         </div>
     </div>
     {% for item in items %}
-        <div class="row blog-item">
+        <div class="row">
             <div class="col-md-4">
-                <div class="blog-image-holder">
+                <div>
                     <a href="{{ constant('ROOT_URL') ~ itemUrl ~ item.slug }}"><img src="{{ item.image }}"></a>
                 </div>
             </div>
             <div class="col-md-8">
-                <div class="row blog-title">
+                <div class="row">
                     <div class="col-md-12">
                         <h2><a href="{{ constant('ROOT_URL') ~ itemUrl ~ item.slug }}">{{ item.title }}</a></h2>
                     </div>
                 </div>
-                <div class="row blog-description">
+                <div class="row">
                     <div class="col-md-12">
                         {{ item.shortText|striptags }}{% if item.short_text|length > 350 %}...{% endif %}
                     </div>
                 </div>
-                <div class="row blog-cta">
+                <div class="row">
                     <div class="col-md-12">
                         <a class="btn btn-primary pull-right" href="{{ constant('ROOT_URL') ~ itemUrlEdit ~ item.id }}">Edit</a>
                     </div>
