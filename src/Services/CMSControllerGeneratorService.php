@@ -113,6 +113,11 @@ class CMSControllerGeneratorService
                 use <?= $moufManager->getVariable('tdbmDefaultBeanNamespace')."\\".ucfirst($componentName)."Bean" ?>;
                 use Mouf\Html\Widgets\MessageService\Service\UserMessageInterface;
                 use Mouf\Html\Utils\WebLibraryManager\WebLibrary;
+                use Mouf\Html\Widgets\EvoluGrid\EvoluGrid;
+                use Mouf\Html\Widgets\EvoluGrid\EvoluGridResultSet;
+                use Mouf\Html\Widgets\EvoluGrid\SimpleColumn;
+                use Mouf\Html\Widgets\EvoluGrid\TwigColumn;
+                use Mouf\Html\Widgets\EvoluGrid\JsColumn;
                 <?php if ($injectTemplate) {
                     ?>
                     use Mouf\Html\Template\TemplateInterface;

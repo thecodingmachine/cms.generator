@@ -224,15 +224,75 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
                 'method' => 'displayBackList',
                 'code' =>
                     '
-        $items = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
+        $evoluGrid = new EvoluGrid();
+        $evoluGrid->setUrl(\''.strtolower($componentName).'/admin/getAll\');
+
+        $evoluGrid->setLimit(10);
+        $evoluGrid->setId(\''.strtolower($componentName).'Grid\');
+        $evoluGrid->setClass(\'table table-striped table-hover\');
+
+        /*$items = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
         $itemUrl = "'.strtolower($componentName).'/";
-        $itemUrlEdit = "'.strtolower($componentName).'/admin/edit?id=";
+        $itemUrlEdit = "'.strtolower($componentName).'/admin/edit?id=";*/
         $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.strtolower($componentName)."/".'back/list.twig'.'",
             array(
-                "items"=>$items,
+                /*"items"=>$items,
                 "itemUrl"=>$itemUrl,
-                "itemUrlEdit"=>$itemUrlEdit
+                "itemUrlEdit"=>$itemUrlEdit*/
+                "items"=>$evoluGrid
             )));
+        '
+            ],
+            [
+                'view' => null,
+                'url' => strtolower($componentName).'/admin/getAll',
+                'parameters' => [
+                    [
+                        'optionnal' => true,
+                        'defaultValue' => null,
+                        'type' => 'int|null',
+                        'name' => 'limit',
+                    ],
+                    [
+                        'optionnal' => true,
+                        'defaultValue' => null,
+                        'type' => 'int|null',
+                        'name' => 'offset',
+                    ],
+                    [
+                        'optionnal' => true,
+                        'defaultValue' => 'json',
+                        'type' => 'string',
+                        'name' => 'output',
+                    ]
+                ],
+                'anyMethod' => false,
+                'getMethod' => true,
+                'postMethod' => false,
+                'putMethod' => false,
+                'deleteMethod' => false,
+                'method' => 'getAll'.ucfirst($componentName),
+                'code' =>
+                    '
+        $evoluGridRs = new EvoluGridResultSet();
+
+        $evoluGridRs->addColumn(new SimpleColumn("Title", "title", true));
+        $evoluGridRs->addColumn(new TwigColumn("Creation date", "{{ created_at | date(\'d-m-Y H:i:s\') }}", "created_at"));
+        $evoluGridRs->addColumn(new JsColumn("Edition",
+            \'$ret = "function(row) {
+                return $(\"<a class=\"btn btn - xs btn - azure\" href=\" ../blog / "+row.slug+"/edit\" target=\"_blank\"><i class=\"fa fa-pencil\"></i>
+                <a class=\"btn btn-xs btn-danger confirmation\" href=\"../blog/"+row.slug+"/delete\"><i class=\"fa fa-trash\"></i>";
+            }";
+
+            return $ret;\'
+        ));
+
+        $data = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
+        $rows = $data->take($offset, $limit);
+
+        $evoluGridRs->setResults($rows);
+        $evoluGridRs->setTotalRowsCount($data->count());
+        $evoluGridRs->output($output);
         '
             ],
             [
