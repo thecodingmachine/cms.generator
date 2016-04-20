@@ -1,6 +1,7 @@
 <?php
 namespace Mouf\Cms\Generator\Controllers;
 
+use Mouf\Cms\Generator\Services\FixService;
 use Mouf\Cms\Generator\Services\CMSControllerGeneratorService;
 use Mouf\Controllers\AbstractMoufInstanceController;
 use Mouf\Database\Patcher\DatabasePatchInstaller;
@@ -13,9 +14,6 @@ use Mouf\Mvc\Splash\Controllers\Controller;
 use Mouf\Html\Template\TemplateInterface;
 use Mouf\Html\HtmlElement\HtmlBlock;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Stopwatch\Stopwatch;
-use Symfony\CS\ErrorsManager;
-use Symfony\CS\Finder\DefaultFinder;
 use \Twig_Environment;
 use Mouf\Html\Renderer\Twig\TwigTemplate;
 use Zend\Diactoros\Response\RedirectResponse;
@@ -404,13 +402,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
                         'type' => 'string',
                         'name' => 'itemContent',
                         'defaultValue' => ''
-                    ],
-                    [
-                        'optionnal' => true,
-                        'type' => 'array',
-                        'name' => 'vignette',
-                        'defaultValue' => array()
-                    ],
+                    ]
                 ],
                 'anyMethod' => false,
                 'getMethod' => false,
@@ -451,17 +443,8 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         ];
         $controllerGenerator->generate($this->moufManager, $componentName.'Controller', strtolower($componentName).'Controller', $namespace, $componentName, false, true, true, $actions);
 
-        $errorsManager = new ErrorsManager();
-        $stopwatch = new Stopwatch();
-        $finder = new DefaultFinder();
-        $finder->in($rootPath."src/".$namespace);
-
-        $fixer = new Fixer(
-            $finder,
-            $errorsManager,
-            $stopwatch
-        );
-        $fixer->fix();
+        $fix = new FixService();
+        $fix->csFix($rootPath."src/".$namespace.ucfirst($componentName)."Controller.php");
 
         set_user_message("Component successfully created.", UserMessageInterface::SUCCESS);
         header('Location: '.ROOT_URL.'cmsadmin/?name='.$name);

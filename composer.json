@@ -10,7 +10,7 @@
     "mouf/database.patcher": "~2.0",
     "mouf/html.htmlelement": "~2.0",
     "mouf/html.widgets.evolugrid": "~5.0",
-    "umpirsky/symfony-upgrade-fixer": "dev-master"
+    "fabpot/php-cs-fixer": "~1.11"
   },
 
   "extra": {
@@ -29,5 +29,6 @@
     }
   },
 
-  "minimum-stability": "dev"
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
