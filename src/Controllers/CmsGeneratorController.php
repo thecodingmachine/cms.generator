@@ -231,20 +231,14 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         $evoluGrid->setId(\''.strtolower($componentName).'Grid\');
         $evoluGrid->setClass(\'table table-striped table-hover\');
 
-        /*$items = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
-        $itemUrl = "'.strtolower($componentName).'/";
-        $itemUrlEdit = "'.strtolower($componentName).'/admin/edit?id=";*/
         $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.strtolower($componentName)."/".'back/list.twig'.'",
             array(
-                /*"items"=>$items,
-                "itemUrl"=>$itemUrl,
-                "itemUrlEdit"=>$itemUrlEdit*/
                 "items"=>$evoluGrid
             )));
         '
             ],
             [
-                'view' => null,
+                'view' => 'response',
                 'url' => strtolower($componentName).'/admin/getAll',
                 'parameters' => [
                     [
@@ -280,7 +274,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         $evoluGridRs->addColumn(new TwigColumn("Creation date", "{{ created_at | date(\'d-m-Y H:i:s\') }}", "created_at"));
         $evoluGridRs->addColumn(new TwigColumn("Edition",
             "<a class=\'btn btn-xs btn-primary\' href=\'edit?id={{ id }}\' target=\'_blank\'><i class=\'glyphicon glyphicon-pencil\'></i></a>".
-            "<a class=\'btn btn-xs btn-danger\' href=\'delete?id={{ id }}\' target=\'_blank\'><i class=\'glyphicon glyphicon-trash\'></i></a>"));
+            "<a class=\'btn btn-xs btn-danger\' href=\'delete?id={{ id }}\' onclick=\'return(confirm(\"Are you sure you want to delete this item ?\"));\'><i class=\'glyphicon glyphicon-trash\'></i></a>"));
 
         $data = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
         $rows = $data->take($offset, $limit);
@@ -353,7 +347,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         '
             ],
             [
-                'view' => null,
+                'view' => 'redirect',
                 'url' => strtolower($componentName).'/admin/delete',
                 'parameters' => [
                     [
@@ -368,18 +362,16 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
                 'putMethod' => false,
                 'deleteMethod' => false,
                 'method' => 'deleteItem',
+                'redirect' => strtolower($componentName).'/admin/list',
                 'code' =>
                     '
-        $deleted = false;
         if(isset($id)){
             $item = $this->daoFactory->get'.ucfirst($componentName).'Dao()->getById($id);
             $this->daoFactory->get'.ucfirst($componentName).'Dao()->delete($item);
-            $deleted = true;
             set_user_message("Item successfully deleted", UserMessageInterface::SUCCESS);
         } else {
             set_user_message("Item id not found", UserMessageInterface::ERROR);
         }
-        return new RedirectResponse(ROOT_URL.'.strtolower($componentName).'/admin/list");
         '
             ],
             [

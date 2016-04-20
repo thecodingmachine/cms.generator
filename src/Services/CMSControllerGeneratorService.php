@@ -68,6 +68,7 @@ class CMSControllerGeneratorService
         $importJsonResponse = false;
         $importHtmlResponse = false;
         $importRedirectResponse = false;
+        $importResponse = false;
 
         foreach ($actions as $key => $action) {
             // Check if the view file exists
@@ -86,6 +87,9 @@ class CMSControllerGeneratorService
             }
             if ($action['view'] == 'json') {
                 $importJsonResponse = true;
+            }
+            if ($action['view'] == 'response') {
+                $importResponse = true;
             }
         }
 
@@ -117,7 +121,6 @@ class CMSControllerGeneratorService
                 use Mouf\Html\Widgets\EvoluGrid\EvoluGridResultSet;
                 use Mouf\Html\Widgets\EvoluGrid\SimpleColumn;
                 use Mouf\Html\Widgets\EvoluGrid\TwigColumn;
-                use Mouf\Html\Widgets\EvoluGrid\JsColumn;
                 <?php if ($injectTemplate) {
                     ?>
                     use Mouf\Html\Template\TemplateInterface;
@@ -159,6 +162,12 @@ class CMSControllerGeneratorService
                 <?php if ($importHtmlResponse) {
                     ?>
                     use Mouf\Mvc\Splash\HtmlResponse;
+                <?php
+                }
+                ?>
+                <?php if ($importResponse) {
+                    ?>
+                    use Zend\Diactoros\Response;
                 <?php
                 }
                 ?>
@@ -317,6 +326,8 @@ class CMSControllerGeneratorService
                         echo "    * @return JsonResponse\n";
                     } elseif ($action['view'] == 'redirect') {
                         echo "    * @return RedirectResponse\n";
+                    } else if ($action['view'] == 'response') {
+                        echo "    * @return Response\n";
                     }
                     ?>
                     */

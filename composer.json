@@ -9,7 +9,8 @@
     "mouf/database.tdbm": "^4.0.0-beta15",
     "mouf/database.patcher": "~2.0",
     "mouf/html.htmlelement": "~2.0",
-    "mouf/html.widgets.evolugrid": "~5.0"
+    "mouf/html.widgets.evolugrid": "~5.0",
+    "umpirsky/symfony-upgrade-fixer": "dev-master"
   },
 
   "extra": {
