@@ -375,8 +375,11 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
             $item = $this->daoFactory->get'.ucfirst($componentName).'Dao()->getById($id);
             $this->daoFactory->get'.ucfirst($componentName).'Dao()->delete($item);
             $deleted = true;
+            set_user_message("Item successfully deleted", UserMessageInterface::SUCCESS);
+        } else {
+            set_user_message("Item id not found", UserMessageInterface::ERROR);
         }
-        return $deleted;
+        return new RedirectResponse(ROOT_URL.'.strtolower($componentName).'/admin/list");
         '
             ],
             [
