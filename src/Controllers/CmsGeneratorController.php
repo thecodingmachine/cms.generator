@@ -17,7 +17,6 @@ use Psr\Log\LoggerInterface;
 use \Twig_Environment;
 use Mouf\Html\Renderer\Twig\TwigTemplate;
 use Zend\Diactoros\Response\RedirectResponse;
-use Symfony\Upgrade\Fixer;
 
 /**
  * This controller generates Cms components
