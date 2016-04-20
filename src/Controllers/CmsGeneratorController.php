@@ -15,6 +15,7 @@ use Mouf\Html\HtmlElement\HtmlBlock;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\CS\ErrorsManager;
+use Symfony\CS\Finder\DefaultFinder;
 use \Twig_Environment;
 use Mouf\Html\Renderer\Twig\TwigTemplate;
 use Zend\Diactoros\Response\RedirectResponse;
@@ -452,8 +453,11 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
 
         $errorsManager = new ErrorsManager();
         $stopwatch = new Stopwatch();
+        $finder = new DefaultFinder();
+        $finder->in($rootPath."src/".$namespace);
+
         $fixer = new Fixer(
-            $rootPath."src/".$namespace,
+            $finder,
             $errorsManager,
             $stopwatch
         );
