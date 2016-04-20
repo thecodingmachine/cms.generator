@@ -13,9 +13,12 @@ use Mouf\Mvc\Splash\Controllers\Controller;
 use Mouf\Html\Template\TemplateInterface;
 use Mouf\Html\HtmlElement\HtmlBlock;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
+use Symfony\CS\ErrorsManager;
 use \Twig_Environment;
 use Mouf\Html\Renderer\Twig\TwigTemplate;
 use Zend\Diactoros\Response\RedirectResponse;
+use Symfony\Upgrade\Fixer;
 
 /**
  * This controller generates Cms components
@@ -446,6 +449,15 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
             ],
         ];
         $controllerGenerator->generate($this->moufManager, $componentName.'Controller', strtolower($componentName).'Controller', $namespace, $componentName, false, true, true, $actions);
+
+        $errorsManager = new ErrorsManager();
+        $stopwatch = new Stopwatch();
+        $fixer = new Fixer(
+            $rootPath."src/".$namespace,
+            $errorsManager,
+            $stopwatch
+        );
+        $fixer->fix();
 
         set_user_message("Component successfully created.", UserMessageInterface::SUCCESS);
         header('Location: '.ROOT_URL.'cmsadmin/?name='.$name);
