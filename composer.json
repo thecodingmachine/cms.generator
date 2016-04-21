@@ -1,5 +1,5 @@
 {
-  "name": "mouf/cmsgenerator",
+  "name": "mouf/cms.generator",
   "autoload": {
     "psr-4": {"Mouf\\Cms\\Generator\\": "src/"}
   },
