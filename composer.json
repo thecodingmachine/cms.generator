@@ -1,8 +1,24 @@
 {
   "name": "mouf/cms.generator",
-  "autoload": {
-    "psr-4": {"Mouf\\Cms\\Generator\\": "src/"}
-  },
+  "description": "This package allow you to auto generate functional CMS components.",
+  "keywords": ["mouf", "cms", "components"],
+  "homepage": "https://github.com/thecodingmachine/cms.generator",
+  "type": "mouf-library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jean-Baptiste Charron",
+      "email": "jb.charron@thecodingmachine.com"
+    },
+    {
+      "name": "Xavier Huberty",
+      "email": "x.huberty@thecodingmachine.com"
+    },
+    {
+      "name": "Thomas Carli",
+      "email": "t.carli@thecodingmachine.com"
+    }
+  ],
 
   "require": {
     "mouf/mvc.splash": "~7.0",
@@ -12,7 +28,9 @@
     "mouf/html.widgets.evolugrid": "~5.0",
     "fabpot/php-cs-fixer": "~1.11"
   },
-
+  "autoload": {
+    "psr-4": {"Mouf\\Cms\\Generator\\": "src/"}
+  },
   "extra": {
     "mouf": {
       "install": [
