@@ -486,7 +486,6 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
             umask($old);
             if (!$result) {
                 set_user_message("Sorry, impossible to create directory '".plainstring_to_htmlprotected($baseDirUpSqlFile)."'. Please check directory permissions.");
-                //header('Location: .?name='.urlencode($name).'&selfedit='.urlencode($selfedit).($patchInstanceName ? '&patchInstanceName='.$patchInstanceName : ''));
 
                 return;
             }
@@ -494,7 +493,6 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
 
         if (!is_writable($baseDirUpSqlFile)) {
             set_user_message("Sorry, directory '".plainstring_to_htmlprotected($baseDirUpSqlFile)."' is not writable. Please check directory permissions.");
-            //header('Location: .?name='.urlencode($name).'&selfedit='.urlencode($selfedit).($patchInstanceName ? '&patchInstanceName='.$patchInstanceName : ''));
 
             return;
         }
@@ -506,7 +504,6 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
             umask($old);
             if (!$result) {
                 set_user_message("Sorry, impossible to create directory '".plainstring_to_htmlprotected($baseDirDownSqlFile)."'. Please check directory permissions.");
-                //header('Location: .?name='.urlencode($name).'&selfedit='.urlencode($selfedit).($patchInstanceName ? '&patchInstanceName='.$patchInstanceName : ''));
 
                 return;
             }
@@ -514,7 +511,6 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
 
         if (!is_writable($baseDirDownSqlFile)) {
             set_user_message("Sorry, directory '".plainstring_to_htmlprotected($baseDirDownSqlFile)."' is not writable. Please check directory permissions.");
-            //header('Location: .?name='.urlencode($name).'&selfedit='.urlencode($selfedit).($patchInstanceName ? '&patchInstanceName='.$patchInstanceName : ''));
 
             return;
         }
