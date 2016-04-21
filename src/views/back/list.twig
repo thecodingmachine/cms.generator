@@ -6,7 +6,22 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            {{ items.toHtml() }}
+            <table>
+                <thead>
+                    <th>Title</th>
+                    <th>Creation date</th>
+                    <th>Edition</th>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                        <tr>
+                            <td>{{ item.title }}</td>
+                            <td>{{ item.createdAt | date('d/m/Y') }}</td>
+                            <td></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
