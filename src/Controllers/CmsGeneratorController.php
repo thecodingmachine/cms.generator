@@ -1,7 +1,7 @@
 <?php
 namespace Mouf\Cms\Generator\Controllers;
 
-use Mouf\Cms\Generator\Services\FixService;
+use Mouf\FixService\Services\FixService;
 use Mouf\Cms\Generator\Services\CMSControllerGeneratorService;
 use Mouf\Controllers\AbstractMoufInstanceController;
 use Mouf\Database\Patcher\DatabasePatchInstaller;
@@ -225,65 +225,12 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
                 'method' => 'displayBackList',
                 'code' =>
                     '
-        $evoluGrid = new EvoluGrid();
-        $evoluGrid->setUrl(\''.strtolower($componentName).'/admin/getAll\');
-
-        $evoluGrid->setLimit(10);
-        $evoluGrid->setId(\''.strtolower($componentName).'Grid\');
-        $evoluGrid->setClass(\'table table-striped table-hover\');
+        $items = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
 
         $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.strtolower($componentName)."/".'back/list.twig'.'",
             array(
-                "items"=>$evoluGrid
+                "items"=>$items
             )));
-        '
-            ],
-            [
-                'view' => 'response',
-                'url' => strtolower($componentName).'/admin/getAll',
-                'parameters' => [
-                    [
-                        'optionnal' => true,
-                        'defaultValue' => null,
-                        'type' => 'int|null',
-                        'name' => 'limit',
-                    ],
-                    [
-                        'optionnal' => true,
-                        'defaultValue' => null,
-                        'type' => 'int|null',
-                        'name' => 'offset',
-                    ],
-                    [
-                        'optionnal' => true,
-                        'defaultValue' => 'json',
-                        'type' => 'string',
-                        'name' => 'output',
-                    ]
-                ],
-                'anyMethod' => false,
-                'getMethod' => true,
-                'postMethod' => false,
-                'putMethod' => false,
-                'deleteMethod' => false,
-                'method' => 'getAll'.ucfirst($componentName),
-                'code' =>
-                    '
-        $evoluGridRs = new EvoluGridResultSet();
-
-        $evoluGridRs->addColumn(new SimpleColumn("Title", "title", true));
-        $evoluGridRs->addColumn(new TwigColumn("Creation date", "{{ created_at | date(\'d-m-Y H:i:s\') }}", "created_at"));
-        $evoluGridRs->addColumn(new TwigColumn("Edition",
-            "<a class=\'btn btn-xs btn-primary\' href=\'edit?id={{ id }}\' target=\'_blank\'><i class=\'glyphicon glyphicon-pencil\'></i></a>".
-            "<a class=\'btn btn-xs btn-danger\' href=\'delete?id={{ id }}\' onclick=\'return(confirm(\"Are you sure you want to delete this item ?\"));\'><i class=\'glyphicon glyphicon-trash\'></i></a>"));
-
-        $data = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
-        $rows = $data->take($offset, $limit);
-
-        $evoluGridRs->setResults($rows->jsonSerialize());
-        $evoluGridRs->setTotalRowsCount($data->count());
-        $evoluGridRs->setFormat($output);
-        return $evoluGridRs->run();
         '
             ],
             [
