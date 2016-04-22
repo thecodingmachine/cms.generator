@@ -1,5 +1,5 @@
 <?php
-namespace Mouf\Cms\Generator\Services;
+namespace Mouf\Cms\Scaffolder\Services;
 
 use Mouf\Composer\ClassNameMapper;
 use Mouf\Mvc\Splash\Controllers\Controller;
@@ -23,18 +23,18 @@ class CMSControllerGeneratorService
      * @param string $controllerName
      * @param string $instanceName
      * @param string $namespace
-     * @param $componentName
-     * @param bool|string $injectLogger
-     * @param bool|string $injectTemplate
-     * @param bool|string $injectDaoFactory
-     * @param array $actions
+     * @param string $componentName
+     * @param bool   $injectLogger
+     * @param bool   $injectTemplate
+     * @param bool   $injectDaoFactory
+     * @param array  $actions
      *
      * @throws SplashCreateControllerServiceException
      * @throws SplashException
      * @throws \Mouf\MoufException
      */
-    public function generate(MoufManager $moufManager, $controllerName, $instanceName, $namespace, $componentName, $injectLogger = false,
-                             $injectTemplate = false, $injectDaoFactory = false, $actions = array())
+    public function generate(MoufManager $moufManager, string $controllerName, string $instanceName, string $namespace, string $componentName, bool $injectLogger = false,
+                             bool $injectTemplate = false, bool $injectDaoFactory = false, array $actions = array())
     {
         $namespace = rtrim($namespace, '\\').'\\';
 
@@ -117,10 +117,7 @@ use Mouf\Mvc\Splash\Controllers\Controller;
 use <?= $moufManager->getVariable('tdbmDefaultBeanNamespace')."\\".ucfirst($componentName)."Bean" ?>;
 use Mouf\Html\Widgets\MessageService\Service\UserMessageInterface;
 use Mouf\Html\Utils\WebLibraryManager\WebLibrary;
-use Mouf\Html\Widgets\EvoluGrid\EvoluGrid;
-use Mouf\Html\Widgets\EvoluGrid\EvoluGridResultSet;
-use Mouf\Html\Widgets\EvoluGrid\SimpleColumn;
-use Mouf\Html\Widgets\EvoluGrid\TwigColumn;
+use Psr\Http\Message\UploadedFileInterface;
 <?php if ($injectTemplate) {
     ?>
 use Mouf\Html\Template\TemplateInterface;
@@ -300,18 +297,22 @@ if ($injectTwig) {
 
     <?php if ($action['anyMethod'] == false) {
     if ($action['getMethod'] == true) {
-        echo "     * @Get\n";
+        echo "* @Get\n";
     }
     if ($action['postMethod'] == true) {
-        echo "     * @Post\n";
+        echo "* @Post\n";
     }
     if ($action['putMethod'] == true) {
-        echo "     * @Put\n";
+        echo "* @Put\n";
     }
     if ($action['deleteMethod'] == true) {
-        echo "     * @Delete\n";
+        echo "* @Delete\n";
     }
 }
+    if (isset($action['requiresRight'])) {
+        echo "     * @RequiresRight(name='".$action['requiresRight']."')\n";
+    }
+
     if (isset($action['parameters'])) {
         $parameters = $action['parameters'];
         foreach ($parameters as $parameter) {
@@ -334,7 +335,7 @@ if ($injectTwig) {
     public function <?= $action['method'] ?>(<?php
     $parametersCode = array();
     foreach ($parameters as $parameter) {
-        $parameterCode = '$'.$parameter['name'];
+        $parameterCode = $parameter['type'].' $'.$parameter['name'];
         if ($parameter['optionnal'] == 'true') {
             if ($parameter['type'] == 'int') {
                 $defaultValue = (int) $parameter['defaultValue'];
@@ -348,7 +349,16 @@ if ($injectTwig) {
         $parametersCode[] = $parameterCode;
     }
     echo implode(', ', $parametersCode);
-    ?>) {
+    ?>)
+    <?php if ($injectTemplate && $action['view'] == 'twig'): ?>
+    : HtmlResponse
+<?php elseif ($injectTemplate && $action['view'] == 'php'): ?>
+    : HtmlResponse
+<?php elseif ($action['view'] == 'json'): ?>
+    : JsonResponse
+<?php elseif ($action['view'] == 'redirect'): ?>
+    : RedirectResponse <?php endif; ?>
+                    {
     <?= $action['code'] ?>
 
     <?php if ($injectTemplate && $action['view'] == 'twig'): ?>
@@ -426,7 +436,7 @@ if ($injectTwig) {
      *
      * @return bool
      */
-    private function createDirectory($directory)
+    private function createDirectory(string $directory) : bool
     {
         if (!file_exists($directory)) {
             // Let's create the directory:

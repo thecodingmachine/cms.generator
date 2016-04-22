@@ -1,5 +1,5 @@
 <?php
-namespace Mouf\Cms\Generator\Exceptions;
+namespace Mouf\Cms\Scaffolder\Exceptions;
 
 use Exception;
 
