@@ -117,6 +117,7 @@ use Mouf\Mvc\Splash\Controllers\Controller;
 use <?= $moufManager->getVariable('tdbmDefaultBeanNamespace')."\\".ucfirst($componentName)."Bean" ?>;
 use Mouf\Html\Widgets\MessageService\Service\UserMessageInterface;
 use Mouf\Html\Utils\WebLibraryManager\WebLibrary;
+use Psr\Http\Message\UploadedFileInterface;
 <?php if ($injectTemplate) {
     ?>
 use Mouf\Html\Template\TemplateInterface;
