@@ -36,13 +36,13 @@ Design choices
 --------------
 
 In the base version, the CMS component contains :
-    - Title
-    - Slug (auto generated from title)
-    - Short text
-    - Content
-    - Image
-    - Creation date
-    - Update date
+- Title
+- Slug (auto generated from title)
+- Short text
+- Content
+- Image 
+- Creation date
+- Update date
 
 We think these are the minimum of useful datas for a CMS component.
 You don't have many useless components, and you're totally free to override the component with your custom needed datas.
