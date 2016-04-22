@@ -1,4 +1,4 @@
-About CMS Generator
+About CMS Scaffolder
 =================================
 
 What is it?
