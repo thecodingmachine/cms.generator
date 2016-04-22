@@ -13,7 +13,7 @@ How to use ?
 To use the CMS Scaffolder, you just need to define your component name, and set it into the CMS => Scaffolder tab in Mouf's interface.
 Here are the steps :
 
-1. You set your component's name, for example : Blog
+1. You set your component's name, for example : Blog. WARNING : For now, the component name has to be in the SINGULAR to avoid the generated controller to use inexistant DAOs & Beans.
 2. You click on "Generate component"
     - The library will automatically :
         - Generate an SQL file
