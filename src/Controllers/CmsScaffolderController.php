@@ -40,7 +40,7 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
         $this->initController($name, $selfedit);
 
         $this->selfedit = $selfedit;
-        $this->content->addFile(__DIR__.'/../views/cmsGenerator.php', $this);
+        $this->content->addFile(__DIR__.'/../views/cmsScaffolder.php', $this);
         $this->template->toHtml();
     }
 
