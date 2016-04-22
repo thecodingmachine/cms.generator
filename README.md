@@ -1,3 +1,5 @@
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/thecodingmachine/cms.scaffolder/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/thecodingmachine/cms.scaffolder/?branch=master)
+
 About CMS Generator
 =================================
 
