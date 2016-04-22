@@ -1,7 +1,7 @@
 <?php
 namespace Mouf\Cms\Scaffolder\Utils;
 
-use Mouf\Cms\Generator\Exceptions\FileExtensionException;
+use Mouf\Cms\Scaffolder\Exceptions\FileExtensionException;
 use Psr\Http\Message\UploadedFileInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -111,7 +111,7 @@ trait CmsTrait {
     public function saveFile(UploadedFileInterface $uploadedFile, string $uploadDir, array $allowedExtensions) : string
     {
         $docName = $this->slugifyFile($uploadedFile->getClientFilename());
-        $extension = strtolower(pathinfo($uploadedFile['name'], PATHINFO_EXTENSION));
+        $extension = strtolower(pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION));
         $fileSystem = new Filesystem();
 
         if (!is_dir($uploadDir)) {
