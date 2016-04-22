@@ -226,10 +226,14 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
                 'code' =>
                     '
         $items = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
+        $itemEditUrl = ROOT_URL."'.strtolower($componentName).'/admin/edit";
+        $itemDeleteUrl = ROOT_URL."'.strtolower($componentName).'/admin/delete";
 
         $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.strtolower($componentName)."/".'back/list.twig'.'",
             array(
-                "items"=>$items
+                "items"=>$items,
+                "itemEditUrl" => $itemEditUrl,
+                "itemDeleteUrl" => $itemDeleteUrl
             )));
         '
             ],
