@@ -250,7 +250,7 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
                     [
                         'optionnal' => true,
                         'defaultValue' => null,
-                        'type' => 'int|null',
+                        'type' => 'int',
                         'name' => 'id',
                     ]
                 ],
