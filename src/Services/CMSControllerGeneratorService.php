@@ -296,16 +296,16 @@ if ($injectTwig) {
 
     <?php if ($action['anyMethod'] == false) {
     if ($action['getMethod'] == true) {
-        echo "     * @Get\n";
+        echo "* @Get\n";
     }
     if ($action['postMethod'] == true) {
-        echo "     * @Post\n";
+        echo "* @Post\n";
     }
     if ($action['putMethod'] == true) {
-        echo "     * @Put\n";
+        echo "* @Put\n";
     }
     if ($action['deleteMethod'] == true) {
-        echo "     * @Delete\n";
+        echo "* @Delete\n";
     }
 }
     if (isset($action['requiresRight'])) {
