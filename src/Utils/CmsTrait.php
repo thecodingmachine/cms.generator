@@ -1,8 +1,10 @@
 <?php
-namespace Mouf\Cms\Generator\Utils;
+namespace Mouf\Cms\Scaffolder\Utils;
+
 use Mouf\Cms\Generator\Exceptions\FileExtensionException;
-use Mouf\Cms\Generator\Exceptions\FileSizeException;
-use Whoops\Exception\ErrorException;
+use Psr\Http\Message\UploadedFileInterface;
+use Symfony\Component\Filesystem\Filesystem;
+
 
 /**
  * @author Jean-Baptiste Charron
@@ -15,8 +17,8 @@ trait CmsTrait {
      * @param string $string
      * @return string
      */
-    public function removeAccent($string) {
-
+    public function removeAccent(string $string) : string
+    {
         $unwantedCharactersArray = array('À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'Æ', 'Ç', 'È', 'É', 'Ê', 'Ë', 'Ì', 'Í', 'Î', 'Ï', 'Ð',
             'Ñ', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', 'Ø', 'Ù', 'Ú', 'Û', 'Ü', 'Ý', 'ß', 'à', 'á', 'â', 'ã',
             'ä', 'å', 'æ', 'ç', 'è', 'é', 'ê', 'ë', 'ì', 'í', 'î', 'ï', 'ñ', 'ò', 'ó', 'ô', 'õ',
@@ -51,7 +53,8 @@ trait CmsTrait {
      * @param string $fileName
      * @return string
      */
-    public function slugifyFile($fileName) {
+    public function slugifyFile(string $fileName) : string
+    {
         // Retrieve extension
         $explodedFileName =  explode(".", $fileName);
         $extension = end($explodedFileName);
@@ -68,8 +71,8 @@ trait CmsTrait {
      * @param string $title The title string to slugify
      * @return string
      */
-    public function slugify($title) {
-
+    public function slugify(string $title) : string
+    {
         // Remove accents
         $title = $this->removeAccent($title);
 
@@ -98,44 +101,36 @@ trait CmsTrait {
     /**
      * Save a file in the upload directory
      *
-     * @param array  $uploadedFile      Is an array resulting of file upload, for example $_FILES["foo"] for <input type="file" name="foo" />
-     * @param string $uploadDir         The upload directory
-     * @param array  $allowedExtensions An array with allowed extensions for the file, for example ['jpg','png','bmp']
+     * @param UploadedFileInterface  $uploadedFile      Result of the file upload
+     * @param string                 $uploadDir         The upload directory
+     * @param array                  $allowedExtensions An array with allowed extensions for the file, for example ['jpg','png','bmp']
      * @return string
      *
      * @throws \Exception
      */
-    public function saveFile($uploadedFile, $uploadDir, $allowedExtensions) {
-
-        $docName = $this->slugifyFile($uploadedFile['name']);
-        $error = $uploadedFile['error'];
-        $tmpName = $uploadedFile['tmp_name'];
+    public function saveFile(UploadedFileInterface $uploadedFile, string $uploadDir, array $allowedExtensions) : string
+    {
+        $docName = $this->slugifyFile($uploadedFile->getClientFilename());
         $extension = strtolower(pathinfo($uploadedFile['name'], PATHINFO_EXTENSION));
+        $fileSystem = new Filesystem();
 
         if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0, true);
+            $fileSystem->mkdir($uploadDir);
         }
 
         // Craft the complete name of the file
-        $filePath = htmlspecialchars($uploadDir.basename($docName));
+        $filePath = $uploadDir.basename($docName);
 
-        // Check file size
-        if ($error == UPLOAD_ERR_INI_SIZE || $error == UPLOAD_ERR_FORM_SIZE) {
-            throw new FileSizeException('Sorry, your file is too large.');
+        if (!in_array($extension, $allowedExtensions)) {
+            throw new FileExtensionException('Sorry, your file extension is not allowed ('.$extension.')');
         } else {
-            if (!in_array($extension, $allowedExtensions)) {
-                throw new FileExtensionException('Sorry, your file extension is not allowed ('.$extension.')');
-            } else {
-                // Check if file already exists
-                if (file_exists($filePath)) {
-                    unlink($filePath);
-                }
-                if (move_uploaded_file($tmpName, $filePath)) {
-                    return basename($docName);
-                } else {
-                    throw new ErrorException('Sorry, there was an error uploading your file.');
-                }
+            // Check if file already exists
+            if ($fileSystem->exists($filePath)) {
+                $fileSystem->remove($filePath);
             }
+            $uploadedFile->moveTo($filePath);
+
+            return basename($docName);
         }
     }
 }

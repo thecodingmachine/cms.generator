@@ -1,8 +1,8 @@
 <?php
-namespace Mouf\Cms\Generator\Controllers;
+namespace Mouf\Cms\Scaffolder\Controllers;
 
 use Mouf\FixService\Services\FixService;
-use Mouf\Cms\Generator\Services\CMSControllerGeneratorService;
+use Mouf\Cms\Scaffolder\Services\CMSControllerGeneratorService;
 use Mouf\Controllers\AbstractMoufInstanceController;
 use Mouf\Database\Patcher\DatabasePatchInstaller;
 use Mouf\Database\TDBM\TDBMService;
@@ -21,7 +21,7 @@ use Zend\Diactoros\Response\RedirectResponse;
 /**
  * This controller generates Cms components
  */
-class CmsGeneratorController extends AbstractMoufInstanceController {
+class CmsScaffolderController extends AbstractMoufInstanceController {
 
     /**
      * The main content block of the page.
@@ -32,9 +32,11 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
     /**
      * @Action
      * @Logged
+     * @param string $name
+     * @param string $selfedit
      */
-    public function index($name, $selfedit = "false") {
-
+    public function index(string $name, string $selfedit = "false")
+    {
         $this->initController($name, $selfedit);
 
         $this->selfedit = $selfedit;
@@ -53,7 +55,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
      *
      * @return RedirectResponse
      */
-    public function componentGenerate($name, $componentName, $selfedit = 'false')
+    public function componentGenerate(string $name, string $componentName, string $selfedit = 'false') : RedirectResponse
     {
         $this->initController($name, $selfedit);
 
@@ -63,7 +65,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         }
         self::sqlGenerate($componentName);
 
-        $uniqueName = "cms-generator-component-".$componentName;
+        $uniqueName = "cms-scaffolder-component-".$componentName;
 
         DatabasePatchInstaller::registerPatch($this->moufManager,
             $uniqueName,
@@ -124,7 +126,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         $useBaseBeanLength = strlen($useBaseBean);
         $useBaseBeanPos = strpos($fileContent, $useBaseBean); // Search the position of the "ComponentnameBaseBean" in the fileContent
 
-        $useTraitInterface = "\nuse Mouf\\Cms\\Generator\\Utils\\CmsTrait;\nuse Mouf\\Cms\\Generator\\Utils\\CmsInterface;\n";
+        $useTraitInterface = "\nuse Mouf\\Cms\\Scaffolder\\Utils\\CmsTrait;\nuse Mouf\\Cms\\Scaffolder\\Utils\\CmsInterface;\n";
         $fileContent = substr_replace($fileContent, $useTraitInterface, $useBaseBeanPos+$useBaseBeanLength, 0); // Insert the string in the fileContent
 
         $extendsBaseBean = "extends ".ucfirst($componentName)."BaseBean";
@@ -165,7 +167,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
 
         // Let's create the views directories
         $namespace = $this->moufManager->getVariable('splashDefaultControllersNamespace');
-        $vendorViewDir = $rootPath."vendor/mouf/cms.generator/src/views/";
+        $vendorViewDir = $rootPath."vendor/mouf/cms.scaffolder/src/views/";
         $viewDir = $this->moufManager->getVariable('splashDefaultViewsDirectory');
 
         $backPath = "back/";
@@ -217,6 +219,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
             [
                 'view' => 'twig',
                 'url' => strtolower($componentName).'/admin/list',
+                'requiresRight' => 'edit_component',
                 'anyMethod' => false,
                 'getMethod' => true,
                 'postMethod' => false,
@@ -240,6 +243,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
             [
                 'view' => 'twig',
                 'url' => strtolower($componentName).'/admin/edit',
+                'requiresRight' => 'edit_component',
                 'parameters' => [
                     [
                         'optionnal' => true,
@@ -301,6 +305,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
             [
                 'view' => 'redirect',
                 'url' => strtolower($componentName).'/admin/delete',
+                'requiresRight' => 'edit_component',
                 'parameters' => [
                     [
                         'optionnal' => false,
@@ -329,6 +334,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
             [
                 'view' => 'redirect',
                 'url' => strtolower($componentName).'/admin/save',
+                'requiresRight' => 'edit_component',
                 'parameters' => [
                     [
                         'optionnal' => false,
@@ -337,7 +343,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
                     ],
                     [
                         'optionnal' => true,
-                        'type' => 'int|null',
+                        'type' => 'int',
                         'name' => 'id',
                         'defaultValue' => null
                     ],
@@ -352,6 +358,12 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
                         'type' => 'string',
                         'name' => 'itemContent',
                         'defaultValue' => ''
+                    ],
+                    [
+                        'optionnal' => true,
+                        'type' => 'UploadedFileInterface',
+                        'name' => 'thumbnail',
+                        'defaultValue' => null
                     ]
                 ],
                 'anyMethod' => false,
@@ -378,13 +390,11 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
         $uploadDir = ROOT_PATH."public/media/'.strtolower($componentName).'/".$item->getId()."/";
         $uploadUrl = ROOT_URL."public/media/'.strtolower($componentName).'/".$item->getId()."/";
 
-        if(isset($_FILES)){
-            if(isset($_FILES["vignette"]) && $_FILES["vignette"]["error"] != 4){
-                $docName = $item->saveFile($_FILES["vignette"], $uploadDir, array("jpg", "png", "jpeg", "bmp"));
+        if (null !== $thumbnail) {
+            $docName = $item->saveFile($thumbnail, $uploadDir, array(\'jpg\', \'png\', \'jpeg\', \'bmp\'));
 
-                $item->setImage($uploadUrl.$docName);
-                $this->daoFactory->get'.ucfirst($componentName).'Dao()->save($item);
-            }
+            $item->setImage($uploadUrl . $docName);
+            $this->daoFactory->get'.ucfirst($componentName).'Dao()->save($item);
         }
 
         set_user_message("Item successfully created !",UserMessageInterface::SUCCESS);
@@ -406,7 +416,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
      * @param string $componentName
      * @return string
      */
-    public function sqlGenerate($componentName)
+    public function sqlGenerate(string $componentName) : string
     {
         $rootPath = realpath(ROOT_PATH.'../../../').'/';
 

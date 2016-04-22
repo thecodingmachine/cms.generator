@@ -1,5 +1,6 @@
 <?php
-namespace Mouf\Cms\Generator\Utils;
+namespace Mouf\Cms\Scaffolder\Utils;
+use Psr\Http\Message\UploadedFileInterface;
 
 /**
  * @author Jean-Baptiste Charron
@@ -13,7 +14,7 @@ interface CmsInterface {
      *
      * @return string
      */
-    public function removeAccent($string);
+    public function removeAccent(string $string) : string;
 
     /**
      * Slugify a full file name with file extension, for example $_FILES["foo"]["name"]
@@ -22,7 +23,7 @@ interface CmsInterface {
      *
      * @return string
      */
-    public function slugifyFile($fileName);
+    public function slugifyFile(string $fileName) : string;
 
     /**
      * Slugify a string in parameter
@@ -31,18 +32,18 @@ interface CmsInterface {
      *
      * @return string
      */
-    public function slugify($title);
+    public function slugify(string $title) : string;
 
     /**
      * Save a file in the upload directory
      *
-     * @param array  $uploadedFile      Is an array resulting of file upload, for example $_FILES["foo"] for <input type="file" name="foo" />
-     * @param string $uploadDir         The upload directory
-     * @param array  $allowedExtensions An array with allowed extensions for the file, for example ['jpg','png','bmp']
+     * @param UploadedFileInterface  $uploadedFile      Result of the file upload
+     * @param string                 $uploadDir         The upload directory
+     * @param array                  $allowedExtensions An array with allowed extensions for the file, for example ['jpg','png','bmp']
      *
      * @return string
      *
      * @throws \Exception
      */
-    public function saveFile($uploadedFile, $uploadDir, $allowedExtensions);
+    public function saveFile(UploadedFileInterface $uploadedFile, string $uploadDir, array $allowedExtensions) : string;
 }

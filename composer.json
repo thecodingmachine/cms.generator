@@ -1,11 +1,15 @@
 {
-  "name": "mouf/cms.generator",
+  "name": "mouf/cms.scaffolder",
   "description": "This package allow you to auto generate functional CMS components.",
-  "keywords": ["mouf", "cms", "components"],
-  "homepage": "https://github.com/thecodingmachine/cms.generator",
+  "keywords": ["mouf", "cms", "scaffold"],
+  "homepage": "https://github.com/thecodingmachine/cms.scaffolder",
   "type": "mouf-library",
   "license": "MIT",
   "authors": [
+    {
+      "name": "Thomas Carli",
+      "email": "t.carli@thecodingmachine.com"
+    },
     {
       "name": "Jean-Baptiste Charron",
       "email": "jb.charron@thecodingmachine.com"
@@ -13,10 +17,6 @@
     {
       "name": "Xavier Huberty",
       "email": "x.huberty@thecodingmachine.com"
-    },
-    {
-      "name": "Thomas Carli",
-      "email": "t.carli@thecodingmachine.com"
     }
   ],
 
@@ -25,10 +25,12 @@
     "mouf/database.tdbm": "^4.0.0-beta15",
     "mouf/database.patcher": "~2.0",
     "mouf/html.htmlelement": "~2.0",
-    "mouf/codestylefixservice": "~1.0"
+    "mouf/codestylefixservice": "~1.0",
+    "symfony/filesystem": "~2.0 | ~3.0",
+    "mouf/security.rightsservice-splash": "~4.0"
   },
   "autoload": {
-    "psr-4": {"Mouf\\Cms\\Generator\\": "src/"}
+    "psr-4": {"Mouf\\Cms\\Scaffolder\\": "src/"}
   },
   "extra": {
     "mouf": {
@@ -37,11 +39,11 @@
           "type": "file",
           "file": "src/install.php",
           "scope": "global",
-          "description": "Installing CMS Generator"
+          "description": "Installing CMS Scaffolder"
         }
       ],
       "require-admin": [
-        "src/CmsGeneratorAdmin.php"
+        "src/CmsScaffolderAdmin.php"
       ]
     }
   },

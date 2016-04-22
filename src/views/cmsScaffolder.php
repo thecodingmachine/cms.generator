@@ -1,4 +1,4 @@
-<?php /* @var $this CmsGeneratorController */ ?>
+<?php /* @var $this CmsScaffolderController */ ?>
 <h1>Generate a new CMS component</h1>
 
 <p>By clicking the link below, you will automatically generate a CMS component with database patch, Dao, Bean, views, URL and controller.</p>
