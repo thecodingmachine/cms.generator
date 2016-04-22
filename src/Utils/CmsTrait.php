@@ -1,20 +1,21 @@
 <?php
+
 namespace Mouf\Cms\Scaffolder\Utils;
 
 use Mouf\Cms\Scaffolder\Exceptions\FileExtensionException;
 use Psr\Http\Message\UploadedFileInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
-
 /**
  * @author Jean-Baptiste Charron
  */
-trait CmsTrait {
-
+trait CmsTrait
+{
     /**
-     * Remove accents from string in parameter
+     * Remove accents from string in parameter.
      *
      * @param string $string
+     *
      * @return string
      */
     public function removeAccent(string $string) : string
@@ -30,7 +31,7 @@ trait CmsTrait {
             'œ', 'Ŕ', 'ŕ', 'Ŗ', 'ŗ', 'Ř', 'ř', 'Ś', 'ś', 'Ŝ', 'ŝ', 'Ş', 'ş', 'Š', 'š', 'Ţ', 'ţ', 'Ť',
             'ť', 'Ŧ', 'ŧ', 'Ũ', 'ũ', 'Ū', 'ū', 'Ŭ', 'ŭ', 'Ů', 'ů', 'Ű', 'ű', 'Ų', 'ų', 'Ŵ', 'ŵ', 'Ŷ',
             'ŷ', 'Ÿ', 'Ź', 'ź', 'Ż', 'ż', 'Ž', 'ž', 'ſ', 'ƒ', 'Ơ', 'ơ', 'Ư', 'ư', 'Ǎ', 'ǎ', 'Ǐ', 'ǐ',
-            'Ǒ', 'ǒ', 'Ǔ', 'ǔ', 'Ǖ', 'ǖ', 'Ǘ', 'ǘ', 'Ǚ', 'ǚ', 'Ǜ', 'ǜ', 'Ǻ', 'ǻ', 'Ǽ', 'ǽ', 'Ǿ', 'ǿ');
+            'Ǒ', 'ǒ', 'Ǔ', 'ǔ', 'Ǖ', 'ǖ', 'Ǘ', 'ǘ', 'Ǚ', 'ǚ', 'Ǜ', 'ǜ', 'Ǻ', 'ǻ', 'Ǽ', 'ǽ', 'Ǿ', 'ǿ', );
 
         $replaceArray = array('A', 'A', 'A', 'A', 'A', 'A', 'AE', 'C', 'E', 'E', 'E', 'E', 'I', 'I', 'I', 'I', 'D', 'N', 'O',
             'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'Y', 's', 'a', 'a', 'a', 'a', 'a', 'a', 'ae', 'c',
@@ -42,21 +43,22 @@ trait CmsTrait {
             'O', 'o', 'O', 'o', 'OE', 'oe', 'R', 'r', 'R', 'r', 'R', 'r', 'S', 's', 'S', 's', 'S', 's', 'S',
             's', 'T', 't', 'T', 't', 'T', 't', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'W',
             'w', 'Y', 'y', 'Y', 'Z', 'z', 'Z', 'z', 'Z', 'z', 's', 'f', 'O', 'o', 'U', 'u', 'A', 'a', 'I', 'i',
-            'O', 'o', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'A', 'a', 'AE', 'ae', 'O', 'o');
+            'O', 'o', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'A', 'a', 'AE', 'ae', 'O', 'o', );
 
         return str_replace($unwantedCharactersArray, $replaceArray, $string);
     }
 
     /**
-     * Slugify a full file name with file extension
+     * Slugify a full file name with file extension.
      *
      * @param string $fileName
+     *
      * @return string
      */
     public function slugifyFile(string $fileName) : string
     {
         // Retrieve extension
-        $explodedFileName =  explode(".", $fileName);
+        $explodedFileName =  explode('.', $fileName);
         $extension = end($explodedFileName);
 
         // Remove extension
@@ -66,9 +68,10 @@ trait CmsTrait {
     }
 
     /**
-     * Slugify a string in parameter
+     * Slugify a string in parameter.
      *
      * @param string $title The title string to slugify
+     *
      * @return string
      */
     public function slugify(string $title) : string
@@ -99,11 +102,12 @@ trait CmsTrait {
     }
 
     /**
-     * Save a file in the upload directory
+     * Save a file in the upload directory.
      *
-     * @param UploadedFileInterface  $uploadedFile      Result of the file upload
-     * @param string                 $uploadDir         The upload directory
-     * @param array                  $allowedExtensions An array with allowed extensions for the file, for example ['jpg','png','bmp']
+     * @param UploadedFileInterface $uploadedFile      Result of the file upload
+     * @param string                $uploadDir         The upload directory
+     * @param array                 $allowedExtensions An array with allowed extensions for the file, for example ['jpg','png','bmp']
+     *
      * @return string
      *
      * @throws \Exception

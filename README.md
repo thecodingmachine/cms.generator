@@ -1,18 +1,16 @@
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/thecodingmachine/cms.scaffolder/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/thecodingmachine/cms.scaffolder/?branch=master)
-
-About CMS Generator
+About CMS Scaffolder
 =================================
 
 What is it?
 -----------
 
-Mouf CMS Generator is a PHP library designed to easily create CMS components.
+Mouf CMS Scaffolder is a PHP library designed to easily create CMS components.
 
 
-Yes, but concretely ?
+How to use ?
 ---------------------
 
-To use the CMS Generator, you just need to define your component name, and set it into the CMS => Generator tab in Mouf's interface.
+To use the CMS Scaffolder, you just need to define your component name, and set it into the CMS => Scaffolder tab in Mouf's interface.
 Here are the steps :
 
 1. You set your component's name, for example : Blog
@@ -31,14 +29,13 @@ Here are the steps :
 3. Purge cache -- to map the new URLs
 4. Let's use it !
 
-The CMS Generator does not provide (for now) a pretty display, it will let you totally free to modify the views and integer it easily in your custom template.
+The CMS Scaffolder does not provide (for now) a pretty display, it will let you totally free to modify the views and integer it easily in your custom template.
 
 
 Design choices
 --------------
 
 In the base version, the CMS component contains :
-
 - Title
 - Slug (auto generated from title)
 - Short text
