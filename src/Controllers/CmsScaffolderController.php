@@ -265,7 +265,7 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
         $item = null;
         $itemUrl = "'.strtolower($componentName).'/";
         $itemSaveUrl = "'.strtolower($componentName).'/admin/save";
-        if(isset($id)){
+        if($id !== 0){
             $item = $this->daoFactory->get'.ucfirst($componentName).'Dao()->getById($id);
         }
         $webLibrary = new WebLibrary(
@@ -377,7 +377,7 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
                 'redirect' => strtolower($componentName).'/admin/list',
                 'code' =>
                     '
-        if(isset($id)) {
+        if($id !== 0) {
             $item = $this->daoFactory->get'.ucfirst($componentName).'Dao()->getById($id);
         } else {
             $item = new '.ucfirst($componentName).'Bean();
