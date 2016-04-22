@@ -63,7 +63,9 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
             set_user_message("You must define a component name.", UserMessageInterface::ERROR);
             header('Location: '.ROOT_URL.'cmsadmin/?name='.$name);
         }
-        self::sqlGenerate($componentName);
+        if(self::sqlGenerate($componentName) == "KO"){
+            header('Location: '.ROOT_URL.'cmsadmin/?name='.$name);
+        }
 
         $uniqueName = "cms-scaffolder-component-".$componentName;
 
@@ -447,15 +449,13 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
             umask($old);
             if (!$result) {
                 set_user_message("Sorry, impossible to create directory '".plainstring_to_htmlprotected($baseDirUpSqlFile)."'. Please check directory permissions.");
-
-                return;
+                return "KO";
             }
         }
 
         if (!is_writable($baseDirUpSqlFile)) {
             set_user_message("Sorry, directory '".plainstring_to_htmlprotected($baseDirUpSqlFile)."' is not writable. Please check directory permissions.");
-
-            return;
+            return "KO";
         }
 
         // Let's create the directory
@@ -465,15 +465,13 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
             umask($old);
             if (!$result) {
                 set_user_message("Sorry, impossible to create directory '".plainstring_to_htmlprotected($baseDirDownSqlFile)."'. Please check directory permissions.");
-
-                return;
+                return "KO";
             }
         }
 
         if (!is_writable($baseDirDownSqlFile)) {
             set_user_message("Sorry, directory '".plainstring_to_htmlprotected($baseDirDownSqlFile)."' is not writable. Please check directory permissions.");
-
-            return;
+            return "KO";
         }
 
         file_put_contents($rootPath.$upSqlFileName, $upSql);
@@ -483,6 +481,6 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
         file_put_contents($rootPath.$downSqlFileName, $downSql);
         // Chmod may fail if the file does not belong to the Apache user.
         @chmod($rootPath.$downSqlFileName, 0664);
-
+        return "OK";
     }
 }
