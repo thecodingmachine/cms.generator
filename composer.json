@@ -34,14 +34,6 @@
   },
   "extra": {
     "mouf": {
-      "install": [
-        {
-          "type": "file",
-          "file": "src/install.php",
-          "scope": "global",
-          "description": "Installing CMS Scaffolder"
-        }
-      ],
       "require-admin": [
         "src/CmsScaffolderAdmin.php"
       ]
