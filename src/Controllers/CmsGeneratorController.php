@@ -165,7 +165,7 @@ class CmsGeneratorController extends AbstractMoufInstanceController {
 
         // Let's create the views directories
         $namespace = $this->moufManager->getVariable('splashDefaultControllersNamespace');
-        $vendorViewDir = $rootPath."vendor/mouf/cmsgenerator/src/views/";
+        $vendorViewDir = $rootPath."vendor/mouf/cms.generator/src/views/";
         $viewDir = $this->moufManager->getVariable('splashDefaultViewsDirectory');
 
         $backPath = "back/";
