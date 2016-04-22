@@ -40,7 +40,7 @@ In the base version, the CMS component contains :
 - Slug (auto generated from title)
 - Short text
 - Content
-- Image 
+- Image
 - Creation date
 - Update date
 
