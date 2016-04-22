@@ -1,4 +1,5 @@
 <?php
+
 namespace Mouf\Cms\Scaffolder\Controllers;
 
 use Mouf\FixService\Services\FixService;
@@ -11,20 +12,18 @@ use Mouf\Html\Widgets\MessageService\Service\UserMessageInterface;
 use Mouf\InstanceProxy;
 use Mouf\MoufManager;
 use Mouf\Mvc\Splash\Controllers\Controller;
-use Mouf\Html\Template\TemplateInterface;
 use Mouf\Html\HtmlElement\HtmlBlock;
-use Psr\Log\LoggerInterface;
-use \Twig_Environment;
 use Mouf\Html\Renderer\Twig\TwigTemplate;
 use Zend\Diactoros\Response\RedirectResponse;
 
 /**
- * This controller generates Cms components
+ * This controller generates Cms components.
  */
-class CmsScaffolderController extends AbstractMoufInstanceController {
-
+class CmsScaffolderController extends AbstractMoufInstanceController
+{
     /**
      * The main content block of the page.
+     *
      * @var HtmlBlock
      */
     public $content;
@@ -32,10 +31,11 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
     /**
      * @Action
      * @Logged
+     *
      * @param string $name
      * @param string $selfedit
      */
-    public function index(string $name, string $selfedit = "false")
+    public function index(string $name, string $selfedit = 'false')
     {
         $this->initController($name, $selfedit);
 
@@ -59,21 +59,21 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
     {
         $this->initController($name, $selfedit);
 
-        if(null == $componentName){
-            set_user_message("You must define a component name.", UserMessageInterface::ERROR);
+        if (null == $componentName) {
+            set_user_message('You must define a component name.', UserMessageInterface::ERROR);
             header('Location: '.ROOT_URL.'cmsadmin/?name='.$name);
         }
-        if(self::sqlGenerate($componentName) == "KO"){
+        if (self::sqlGenerate($componentName) == 'KO') {
             header('Location: '.ROOT_URL.'cmsadmin/?name='.$name);
         }
 
-        $uniqueName = "cms-scaffolder-component-".$componentName;
+        $uniqueName = 'cms-scaffolder-component-'.$componentName;
 
         DatabasePatchInstaller::registerPatch($this->moufManager,
             $uniqueName,
-            "Creating the table for the new CMS component : ".$componentName,
-            "database/up/".date('YmdHis')."-patch.sql", // SQL patch file, relative to ROOT_PATH
-            "database/down/".date('YmdHis')."-patch.sql"); // Optional SQL revert patch file, relative to ROOT_PATH
+            'Creating the table for the new CMS component : '.$componentName,
+            'database/up/'.date('YmdHis').'-patch.sql', // SQL patch file, relative to ROOT_PATH
+            'database/down/'.date('YmdHis').'-patch.sql'); // Optional SQL revert patch file, relative to ROOT_PATH
 
         $this->moufManager->rewriteMouf();
 
@@ -115,82 +115,82 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
         $rootPath = realpath(ROOT_PATH.'../../../').'/';
 
         // Let's insert uses in the Bean
-        $beanFileName = $rootPath."src/".$beannamespace."/".ucfirst($componentName)."Bean.php"; // Ex: src/Model/Bean/ComponentnameBean.php
+        $beanFileName = $rootPath.'src/'.$beannamespace.'/'.ucfirst($componentName).'Bean.php'; // Ex: src/Model/Bean/ComponentnameBean.php
 
-        if(!file_exists($beanFileName)){
-            set_user_message("Fail on editing the Bean", UserMessageInterface::ERROR);
+        if (!file_exists($beanFileName)) {
+            set_user_message('Fail on editing the Bean', UserMessageInterface::ERROR);
             header('Location: '.ROOT_URL.'cmsadmin/?name='.$name);
         }
 
         $fileContent = file_get_contents($beanFileName);
 
-        $useBaseBean = ucfirst($componentName)."BaseBean;";
+        $useBaseBean = ucfirst($componentName).'BaseBean;';
         $useBaseBeanLength = strlen($useBaseBean);
         $useBaseBeanPos = strpos($fileContent, $useBaseBean); // Search the position of the "ComponentnameBaseBean" in the fileContent
 
         $useTraitInterface = "\nuse Mouf\\Cms\\Scaffolder\\Utils\\CmsTrait;\nuse Mouf\\Cms\\Scaffolder\\Utils\\CmsInterface;\n";
-        $fileContent = substr_replace($fileContent, $useTraitInterface, $useBaseBeanPos+$useBaseBeanLength, 0); // Insert the string in the fileContent
+        $fileContent = substr_replace($fileContent, $useTraitInterface, $useBaseBeanPos + $useBaseBeanLength, 0); // Insert the string in the fileContent
 
-        $extendsBaseBean = "extends ".ucfirst($componentName)."BaseBean";
+        $extendsBaseBean = 'extends '.ucfirst($componentName).'BaseBean';
         $extendsBaseBeanLength = strlen($extendsBaseBean);
         $extendsBaseBeanPos = strpos($fileContent, $extendsBaseBean); // Search the position of the "extends ComponentnameBaseBean" in the fileContent
 
         $implementsCmsInsterFace = " implements CmsInterface {\n    use CmsTrait;\n\n";
-        $fileContent = substr_replace($fileContent, $implementsCmsInsterFace, $extendsBaseBeanPos+$extendsBaseBeanLength, -1); // Replace the string in the fileContent
+        $fileContent = substr_replace($fileContent, $implementsCmsInsterFace, $extendsBaseBeanPos + $extendsBaseBeanLength, -1); // Replace the string in the fileContent
 
         file_put_contents($beanFileName, $fileContent);
 
         // Let's create a method in the Dao
-        $daoFileName = $rootPath."src/".$daonamespace."/".ucfirst($componentName)."Dao.php"; // Ex: src/Model/Dao/ComponentnameDao.php
+        $daoFileName = $rootPath.'src/'.$daonamespace.'/'.ucfirst($componentName).'Dao.php'; // Ex: src/Model/Dao/ComponentnameDao.php
 
-        if(!file_exists($daoFileName)){
-            set_user_message("Fail on editing the Dao", UserMessageInterface::ERROR);
+        if (!file_exists($daoFileName)) {
+            set_user_message('Fail on editing the Dao', UserMessageInterface::ERROR);
             header('Location: '.ROOT_URL.'cmsadmin/?name='.$name);
         }
 
         $fileContent = file_get_contents($daoFileName);
 
-        $extendsBaseDao = "extends ".ucfirst($componentName)."BaseDao";
+        $extendsBaseDao = 'extends '.ucfirst($componentName).'BaseDao';
         $extendsBaseDaoLength = strlen($extendsBaseDao);
         $extendsBaseDaoPos = strpos($fileContent, $extendsBaseDao);
 
         $getBySlug = "\n{
     /**
      * @param string \$slug
-     * @return \\".$beannamespace."\\".ucfirst($componentName)."Bean
+     * @return \\".$beannamespace.'\\'.ucfirst($componentName)."Bean
      */
     public function getBySlug(\$slug) {
         return \$this->findOne('slug = :slug', array('slug' => addslashes(\$slug)));
     }
 }";
-        $fileContent = substr_replace($fileContent, $getBySlug, $extendsBaseDaoPos+$extendsBaseDaoLength, -1); // Insert the string in the fileContent
+        $fileContent = substr_replace($fileContent, $getBySlug, $extendsBaseDaoPos + $extendsBaseDaoLength, -1); // Insert the string in the fileContent
 
         file_put_contents($daoFileName, $fileContent);
 
         // Let's create the views directories
         $namespace = $this->moufManager->getVariable('splashDefaultControllersNamespace');
-        $vendorViewDir = $rootPath."vendor/mouf/cms.scaffolder/src/views/";
+        $vendorViewDir = $rootPath.'vendor/mouf/cms.scaffolder/src/views/';
         $viewDir = $this->moufManager->getVariable('splashDefaultViewsDirectory');
 
-        $backPath = "back/";
-        $frontPath = "front/";
+        $backPath = 'back/';
+        $frontPath = 'front/';
 
-        $backEditContent = file_get_contents($vendorViewDir.$backPath."edit.twig");
-        $backListContent = file_get_contents($vendorViewDir.$backPath."list.twig");
-        $frontItemContent = file_get_contents($vendorViewDir.$frontPath."item.twig");
-        $frontListContent = file_get_contents($vendorViewDir.$frontPath."list.twig");
+        $backEditContent = file_get_contents($vendorViewDir.$backPath.'edit.twig');
+        $backListContent = file_get_contents($vendorViewDir.$backPath.'list.twig');
+        $frontItemContent = file_get_contents($vendorViewDir.$frontPath.'item.twig');
+        $frontListContent = file_get_contents($vendorViewDir.$frontPath.'list.twig');
 
-        if(!is_dir($rootPath.$viewDir.$backPath)) {
-            mkdir($rootPath.$viewDir.strtolower($componentName)."/".$backPath, 0, true);
+        if (!is_dir($rootPath.$viewDir.$backPath)) {
+            mkdir($rootPath.$viewDir.strtolower($componentName).'/'.$backPath, 0, true);
         }
-        if(!is_dir($rootPath.$viewDir.$frontPath)) {
-            mkdir($rootPath.$viewDir.strtolower($componentName)."/".$frontPath, 0, true);
+        if (!is_dir($rootPath.$viewDir.$frontPath)) {
+            mkdir($rootPath.$viewDir.strtolower($componentName).'/'.$frontPath, 0, true);
         }
 
-        file_put_contents($rootPath.$viewDir.strtolower($componentName)."/".$backPath."edit.twig",$backEditContent);
-        file_put_contents($rootPath.$viewDir.strtolower($componentName)."/".$backPath."list.twig",$backListContent);
-        file_put_contents($rootPath.$viewDir.strtolower($componentName)."/".$frontPath."item.twig",$frontItemContent);
-        file_put_contents($rootPath.$viewDir.strtolower($componentName)."/".$frontPath."list.twig",$frontListContent);
+        file_put_contents($rootPath.$viewDir.strtolower($componentName).'/'.$backPath.'edit.twig', $backEditContent);
+        file_put_contents($rootPath.$viewDir.strtolower($componentName).'/'.$backPath.'list.twig', $backListContent);
+        file_put_contents($rootPath.$viewDir.strtolower($componentName).'/'.$frontPath.'item.twig', $frontItemContent);
+        file_put_contents($rootPath.$viewDir.strtolower($componentName).'/'.$frontPath.'list.twig', $frontListContent);
 
         // Let's generate the new component Controller
         $controllerGenerator  = new CMSControllerGeneratorService();
@@ -205,18 +205,17 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
                 'putMethod' => false,
                 'deleteMethod' => false,
                 'method' => 'displayFrontList',
-                'code' =>
-                    '
+                'code' => '
         $items = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
         $itemUrl = "'.strtolower($componentName).'/";
         $itemUrlEdit = "'.strtolower($componentName).'/admin/edit?id=";
-        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.strtolower($componentName)."/".'front/list.twig'.'",
+        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.strtolower($componentName).'/'.'front/list.twig'.'",
             array(
                 "items"=>$items,
                 "itemUrl"=>$itemUrl,
                 "itemUrlEdit"=>$itemUrlEdit
             )));
-        '
+        ',
             ],
             [
                 'view' => 'twig',
@@ -228,19 +227,18 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
                 'putMethod' => false,
                 'deleteMethod' => false,
                 'method' => 'displayBackList',
-                'code' =>
-                    '
+                'code' => '
         $items = $this->daoFactory->get'.ucfirst($componentName).'Dao()->findAll();
         $itemEditUrl = ROOT_URL."'.strtolower($componentName).'/admin/edit";
         $itemDeleteUrl = ROOT_URL."'.strtolower($componentName).'/admin/delete";
 
-        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.strtolower($componentName)."/".'back/list.twig'.'",
+        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.strtolower($componentName).'/'.'back/list.twig'.'",
             array(
                 "items"=>$items,
                 "itemEditUrl" => $itemEditUrl,
                 "itemDeleteUrl" => $itemDeleteUrl
             )));
-        '
+        ',
             ],
             [
                 'view' => 'twig',
@@ -252,7 +250,7 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
                         'defaultValue' => null,
                         'type' => 'int',
                         'name' => 'id',
-                    ]
+                    ],
                 ],
                 'anyMethod' => false,
                 'getMethod' => true,
@@ -260,8 +258,7 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
                 'putMethod' => false,
                 'deleteMethod' => false,
                 'method' => 'editItem',
-                'code' =>
-                    '
+                'code' => '
         $item = null;
         $itemUrl = "'.strtolower($componentName).'/";
         $itemSaveUrl = "'.strtolower($componentName).'/admin/save";
@@ -274,13 +271,13 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
         );
 
         $this->template->getWebLibraryManager()->addLibrary($webLibrary);
-        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.strtolower($componentName)."/".'back/edit.twig'.'",
+        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.strtolower($componentName).'/'.'back/edit.twig'.'",
             array(
                 "item"=>$item,
                 "itemUrl"=>$itemUrl,
                 "itemSaveUrl"=>$itemSaveUrl
             )));
-        '
+        ',
             ],
             [
                 'view' => 'twig',
@@ -290,7 +287,7 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
                         'optionnal' => false,
                         'type' => 'string',
                         'name' => 'slug',
-                    ]
+                    ],
                 ],
                 'anyMethod' => false,
                 'getMethod' => true,
@@ -298,11 +295,10 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
                 'putMethod' => false,
                 'deleteMethod' => false,
                 'method' => 'displayItem',
-                'code' =>
-                    '
+                'code' => '
         $item = $this->daoFactory->get'.ucfirst($componentName).'Dao()->getBySlug($slug);
-        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.strtolower($componentName)."/".'front/item.twig'.'", array("item"=>$item)));
-        '
+        $this->content->addHtmlElement(new TwigTemplate($this->twig, "'.$viewDir.strtolower($componentName).'/'.'front/item.twig'.'", array("item"=>$item)));
+        ',
             ],
             [
                 'view' => 'redirect',
@@ -313,7 +309,7 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
                         'optionnal' => false,
                         'type' => 'int',
                         'name' => 'id',
-                    ]
+                    ],
                 ],
                 'anyMethod' => false,
                 'getMethod' => true,
@@ -322,8 +318,7 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
                 'deleteMethod' => false,
                 'method' => 'deleteItem',
                 'redirect' => strtolower($componentName).'/admin/list',
-                'code' =>
-                    '
+                'code' => '
         if(isset($id)){
             $item = $this->daoFactory->get'.ucfirst($componentName).'Dao()->getById($id);
             $this->daoFactory->get'.ucfirst($componentName).'Dao()->delete($item);
@@ -331,7 +326,7 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
         } else {
             set_user_message("Item id not found", UserMessageInterface::ERROR);
         }
-        '
+        ',
             ],
             [
                 'view' => 'redirect',
@@ -347,26 +342,26 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
                         'optionnal' => true,
                         'type' => 'int',
                         'name' => 'id',
-                        'defaultValue' => null
+                        'defaultValue' => null,
                     ],
                     [
                         'optionnal' => true,
                         'type' => 'string',
                         'name' => 'shortText',
-                        'defaultValue' => ''
+                        'defaultValue' => '',
                     ],
                     [
                         'optionnal' => true,
                         'type' => 'string',
                         'name' => 'itemContent',
-                        'defaultValue' => ''
+                        'defaultValue' => '',
                     ],
                     [
                         'optionnal' => true,
                         'type' => 'UploadedFileInterface',
                         'name' => 'thumbnail',
-                        'defaultValue' => null
-                    ]
+                        'defaultValue' => null,
+                    ],
                 ],
                 'anyMethod' => false,
                 'getMethod' => false,
@@ -375,8 +370,7 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
                 'deleteMethod' => false,
                 'method' => 'save',
                 'redirect' => strtolower($componentName).'/admin/list',
-                'code' =>
-                    '
+                'code' => '
         if($id !== 0) {
             $item = $this->daoFactory->get'.ucfirst($componentName).'Dao()->getById($id);
         } else {
@@ -400,35 +394,36 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
         }
 
         set_user_message("Item successfully created !",UserMessageInterface::SUCCESS);
-        '
+        ',
             ],
         ];
         $controllerGenerator->generate($this->moufManager, $componentName.'Controller', strtolower($componentName).'Controller', $namespace, $componentName, false, true, true, $actions);
 
         $fix = new FixService();
-        $fix->csFix($rootPath."src/".$namespace.ucfirst($componentName)."Controller.php");
+        $fix->csFix($rootPath.'src/'.$namespace.ucfirst($componentName).'Controller.php');
 
-        set_user_message("Component successfully created.", UserMessageInterface::SUCCESS);
+        set_user_message('Component successfully created.', UserMessageInterface::SUCCESS);
         header('Location: '.ROOT_URL.'cmsadmin/?name='.$name);
     }
 
     /**
-     * This action generates the DAOs and Beans for the TDBM service passed in parameterd
+     * This action generates the DAOs and Beans for the TDBM service passed in parameterd.
      *
      * @param string $componentName
+     *
      * @return string
      */
     public function sqlGenerate(string $componentName) : string
     {
         $rootPath = realpath(ROOT_PATH.'../../../').'/';
 
-        $upSqlFileName = "database/up/".date('YmdHis')."-patch.sql";
-        $downSqlFileName = "database/down/".date('YmdHis')."-patch.sql";
+        $upSqlFileName = 'database/up/'.date('YmdHis').'-patch.sql';
+        $downSqlFileName = 'database/down/'.date('YmdHis').'-patch.sql';
 
         $baseDirUpSqlFile = dirname($rootPath.$upSqlFileName);
         $baseDirDownSqlFile = dirname($rootPath.$downSqlFileName);
 
-        $upSql = "CREATE TABLE IF NOT EXISTS `".htmlspecialchars($componentName)."` (
+        $upSql = 'CREATE TABLE IF NOT EXISTS `'.htmlspecialchars($componentName)."` (
                           `id` int(11) NOT NULL AUTO_INCREMENT,
                           `title` varchar(255) NOT NULL DEFAULT '',
                           `slug` varchar(255) NOT NULL DEFAULT '',
@@ -440,7 +435,7 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
                           PRIMARY KEY (`id`)
                         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
-        $downSql = "DROP TABLE IF EXISTS `".htmlspecialchars($componentName)."`";
+        $downSql = 'DROP TABLE IF EXISTS `'.htmlspecialchars($componentName).'`';
 
         // Let's create the directory
         if (!file_exists($baseDirUpSqlFile)) {
@@ -449,13 +444,15 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
             umask($old);
             if (!$result) {
                 set_user_message("Sorry, impossible to create directory '".plainstring_to_htmlprotected($baseDirUpSqlFile)."'. Please check directory permissions.");
-                return "KO";
+
+                return 'KO';
             }
         }
 
         if (!is_writable($baseDirUpSqlFile)) {
             set_user_message("Sorry, directory '".plainstring_to_htmlprotected($baseDirUpSqlFile)."' is not writable. Please check directory permissions.");
-            return "KO";
+
+            return 'KO';
         }
 
         // Let's create the directory
@@ -465,13 +462,15 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
             umask($old);
             if (!$result) {
                 set_user_message("Sorry, impossible to create directory '".plainstring_to_htmlprotected($baseDirDownSqlFile)."'. Please check directory permissions.");
-                return "KO";
+
+                return 'KO';
             }
         }
 
         if (!is_writable($baseDirDownSqlFile)) {
             set_user_message("Sorry, directory '".plainstring_to_htmlprotected($baseDirDownSqlFile)."' is not writable. Please check directory permissions.");
-            return "KO";
+
+            return 'KO';
         }
 
         file_put_contents($rootPath.$upSqlFileName, $upSql);
@@ -481,6 +480,7 @@ class CmsScaffolderController extends AbstractMoufInstanceController {
         file_put_contents($rootPath.$downSqlFileName, $downSql);
         // Chmod may fail if the file does not belong to the Apache user.
         @chmod($rootPath.$downSqlFileName, 0664);
-        return "OK";
+
+        return 'OK';
     }
 }

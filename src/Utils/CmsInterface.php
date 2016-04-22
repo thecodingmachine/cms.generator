@@ -1,14 +1,16 @@
 <?php
+
 namespace Mouf\Cms\Scaffolder\Utils;
+
 use Psr\Http\Message\UploadedFileInterface;
 
 /**
  * @author Jean-Baptiste Charron
  */
-interface CmsInterface {
-
+interface CmsInterface
+{
     /**
-     * Remove accents from string in parameter
+     * Remove accents from string in parameter.
      *
      * @param string $string
      *
@@ -17,7 +19,7 @@ interface CmsInterface {
     public function removeAccent(string $string) : string;
 
     /**
-     * Slugify a full file name with file extension, for example $_FILES["foo"]["name"]
+     * Slugify a full file name with file extension, for example $_FILES["foo"]["name"].
      *
      * @param string $fileName
      *
@@ -26,7 +28,7 @@ interface CmsInterface {
     public function slugifyFile(string $fileName) : string;
 
     /**
-     * Slugify a string in parameter
+     * Slugify a string in parameter.
      *
      * @param string $title The title string to slugify
      *
@@ -35,11 +37,11 @@ interface CmsInterface {
     public function slugify(string $title) : string;
 
     /**
-     * Save a file in the upload directory
+     * Save a file in the upload directory.
      *
-     * @param UploadedFileInterface  $uploadedFile      Result of the file upload
-     * @param string                 $uploadDir         The upload directory
-     * @param array                  $allowedExtensions An array with allowed extensions for the file, for example ['jpg','png','bmp']
+     * @param UploadedFileInterface $uploadedFile      Result of the file upload
+     * @param string                $uploadDir         The upload directory
+     * @param array                 $allowedExtensions An array with allowed extensions for the file, for example ['jpg','png','bmp']
      *
      * @return string
      *
